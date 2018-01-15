@@ -9,8 +9,8 @@
 # Operator Joystick
 |Control        |Action                |
 | ------------- | -------------------- |
-|Trigger (tap)  |Grab                  |
-|Button 2 (tap) |Release               |
+|Trigger        |Grab                  |
+|Button 2       |Release               |
 |Button 3 (hold)|Raise Arm Stage 1     |
 |Button 5 (hold)|Lower Arm Stage 1     |
 |Stick Vertical |Rase/Lower Arm Stage 2|
