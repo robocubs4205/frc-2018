@@ -1,16 +1,16 @@
 # Drive Motors
-|Motor      |Type |Id   |
-| --------- | --- | --- |
-|Front Left |CAN  |13   |
-|Front Right|CAN  |11   |
-|Rear Left  |CAN  |12   |
-|Rear Right |CAN  |10   |
+|Motor      |Controller|Type |Id   |
+| --------- | -------- | --- | --- |
+|Front Left |Talon SRX |CAN  |13   |
+|Front Right|Talon SRX |CAN  |11   |
+|Rear Left  |Talon SRX |CAN  |12   |
+|Rear Right |Talon SRX |CAN  |10   |
 
 # Arm Motors
-|Motor      |Type |Id   |
-| --------- | --- | --- |
-|Arm Stage 1|PWM  |1    |
-|Arm Stage 2|PWM  |2    |
-|Winch      |CAN  |14   |
-|Gripper    |PWM  |3    |
-|Arm Tilt   |PWM  |4    |
+|Motor      |Controller |Type |Id   |
+| --------- | --------- | --- | --- |
+|Arm Stage 1|Talon      |PWM  |1    |
+|Arm Stage 2|Talon      |PWM  |2    |
+|Winch      |Talon SRX  |CAN  |14   |
+|Gripper    |Talon      |PWM  |3    |
+|Arm Tilt   |Talon      |PWM  |4    |
