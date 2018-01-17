@@ -13,7 +13,7 @@ public class Winch extends Subsystem{
 
     @Override
     protected void initDefaultCommand() {
-
+        setDefaultCommand(new Stop());
     }
 
     class Stop extends InstantCommand{
