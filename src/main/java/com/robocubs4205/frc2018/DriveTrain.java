@@ -5,11 +5,14 @@ import com.ctre.phoenix.drive.MecanumDrive;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+@SuppressWarnings("FieldCanBeLocal")
 class DriveTrain extends Subsystem {
     private final MecanumDrive drive;
+
+    private final double proportionalLateralSpeed = 1;
+    private final double proportionalTurnSpeed = 1;
 
     DriveTrain() {
         TalonSRX frontLeft = new TalonSRX(13);
@@ -17,7 +20,7 @@ class DriveTrain extends Subsystem {
         TalonSRX rearLeft = new TalonSRX(12);
         TalonSRX rearRight = new TalonSRX(10);
 
-        drive = new MecanumDrive(frontLeft,rearLeft,frontRight,rearRight);
+        drive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
     }
 
     @Override
@@ -50,12 +53,15 @@ class DriveTrain extends Subsystem {
         }
 
         public Mecanum(double forward, double turn) {
-            this(forward,turn,0);
+            this(forward, turn, 0);
         }
 
         @Override
-        protected void execute(){
-            drive.set(DriveMode.PercentOutput,forward,turn,strafe);
+        protected void execute() {
+            drive.set(DriveMode.PercentOutput,
+                    forward * proportionalLateralSpeed,
+                    turn * proportionalTurnSpeed,
+                    strafe * proportionalLateralSpeed);
         }
 
         @Override
