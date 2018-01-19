@@ -34,7 +34,7 @@ public class ArmStage1 extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(extendSpeed);
+            motor.set(-extendSpeed);
         }
 
         @Override
@@ -51,7 +51,7 @@ public class ArmStage1 extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(-retractSpeed);
+            motor.set(retractSpeed);
         }
 
         @Override
