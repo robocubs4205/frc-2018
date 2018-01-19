@@ -18,6 +18,14 @@ public class Robot extends TimedRobot {
     private Gripper gripper = new Gripper();
     private Winch winch = new Winch();
 
+    public Robot(){
+        driveStick.setTwistChannel(3);
+        controlStick.setTwistChannel(3);
+        driveStick.setThrottleChannel(2);
+        driveStick.setThrottleChannel(2);
+
+    }
+
     @Override
     public void teleopInit() {
         new JoystickButton(controlStick, 1).whileActive(gripper.new Close());
@@ -36,9 +44,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
 
         if (driveStick.getTrigger()) {
-            driveTrain.new Mecanum(-driveStick.getY(), driveStick.getX(), driveStick.getTwist()).start();
+            driveTrain.new Mecanum(-driveStick.getY(), driveStick.getTwist(),driveStick.getX()).start();
         } else {
-            driveTrain.new Mecanum(-driveStick.getY() / 2, driveStick.getX() / 2, driveStick.getTwist() / 2).start();
+            driveTrain.new Mecanum(-driveStick.getY() / 2, driveStick.getTwist()/2,driveStick.getX() / 2).start();
         }
 
         armStage2.new Proportional(-controlStick.getY()).start();
