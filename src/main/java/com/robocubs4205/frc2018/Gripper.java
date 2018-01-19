@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 class Gripper extends Subsystem {
     private final double openSpeed = 0.5;
     private final double closeSpeed = 0.3;
-    private final Talon motor = new Talon(3);
+    private final Talon rightMotor = new Talon(3);
+    private final Talon leftMotor = new Talon(0);
+
 
     @Override
     protected void initDefaultCommand() {
@@ -23,7 +25,8 @@ class Gripper extends Subsystem {
 
         @Override
         protected void execute() {
-            motor.set(0);
+            rightMotor.set(0);
+            leftMotor.set(0);
         }
     }
 
@@ -35,7 +38,8 @@ class Gripper extends Subsystem {
 
         @Override
         protected void execute() {
-            motor.set(openSpeed);
+            leftMotor.set(openSpeed);
+            rightMotor.set(-openSpeed);
         }
 
         @Override
@@ -51,7 +55,8 @@ class Gripper extends Subsystem {
 
         @Override
         protected void execute() {
-            motor.set(-closeSpeed);
+            leftMotor.set(-closeSpeed);
+            rightMotor.set(closeSpeed);
         }
 
         @Override
