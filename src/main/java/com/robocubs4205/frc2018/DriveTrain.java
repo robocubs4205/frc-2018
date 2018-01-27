@@ -97,6 +97,7 @@ class DriveTrain extends Subsystem {
          * @param speed the speed on the range (0,1]
          */
         DriveEncoder(double distance, double speed){
+            requires(DriveTrain.this);
             this.distance = distance;
             this.speed = speed;
         }
