@@ -18,7 +18,7 @@ class DriveTrain extends Subsystem {
 
     private final int CPR = 4096;
 
-    private final double wheelDiameter = 0.5;
+    private final double wheelDiameter = (5f+3f/8)/12;
     private final double wheelCircumference = wheelDiameter * Math.PI;
     private final int CPF = (int) (CPR / wheelCircumference);
 
@@ -111,10 +111,10 @@ class DriveTrain extends Subsystem {
          * @param precision the precision in feet within which the command will finish
          */
         DriveEncoder(double distance, double speed, double precision) {
-            this.precision = precision;
             requires(DriveTrain.this);
             this.distance = distance;
             this.speed = speed;
+            this.precision = precision;
         }
 
         @Override
@@ -127,6 +127,8 @@ class DriveTrain extends Subsystem {
             rearRight.configPeakOutputForward(speed, 10);
             rearLeft.configPeakOutputReverse(-speed, 10);
             rearRight.configPeakOutputReverse(-speed, 10);
+            rearLeft.setSensorPhase(true);
+            rearRight.setSensorPhase(false);
 
             frontLeft.follow(rearLeft);
             frontRight.follow(rearRight);
@@ -140,8 +142,8 @@ class DriveTrain extends Subsystem {
 
         @Override
         protected boolean isFinished() {
-            return (rearLeft.getClosedLoopError(0) < CPF * precision) &&
-                    (rearRight.getClosedLoopError(0) < CPF * precision);
+            return (Math.abs(rearLeft.getSelectedSensorPosition(0)-CPF*distance) < CPF * precision)&&
+                    (Math.abs(rearRight.getSelectedSensorPosition(0)-CPF*distance) < CPF * precision);
         }
     }
 }
