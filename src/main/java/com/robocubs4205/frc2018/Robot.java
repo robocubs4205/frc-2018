@@ -59,6 +59,16 @@ public class Robot extends TimedRobot {
         new FullStop().start();
     }
 
+    @Override
+    public void autonomousInit(){
+        driveTrain.new DriveEncoder(1).start();
+    }
+
+    @Override
+    public void autonomousPeriodic(){
+        Scheduler.getInstance().run();
+    }
+
     class FullStop extends CommandGroup {
         FullStop() {
             addParallel(driveTrain.new Stop());

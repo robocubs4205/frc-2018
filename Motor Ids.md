@@ -12,6 +12,7 @@
 |Gripper Left |Talon      |PWM  |0    |
 |Arm Stage 1  |Talon      |PWM  |1    |
 |Arm Stage 2  |Talon      |PWM  |2    |
-|Winch        |Talon SRX  |CAN  |14   |
+|Winch Master |Talon SRX  |CAN  |14   |
+|Winch Slave  |Talon SRX  |CAN  |15   |
 |Gripper Right|Talon      |PWM  |3    |
 |Arm Tilt     |Talon      |PWM  |4    |

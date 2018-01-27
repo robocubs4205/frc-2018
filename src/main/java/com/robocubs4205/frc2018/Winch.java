@@ -9,7 +9,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 @SuppressWarnings("FieldCanBeLocal")
 public class Winch extends Subsystem{
     private final double retractSpeed = 0.75;
-    private final TalonSRX motor = new TalonSRX(14);
+    private final TalonSRX master = new TalonSRX(14);
+    private final TalonSRX slave = new TalonSRX(15);
+
+    Winch(){
+        slave.follow(master);
+    }
 
     @Override
     protected void initDefaultCommand() {
@@ -22,7 +27,7 @@ public class Winch extends Subsystem{
         }
         @Override
         protected void execute(){
-            motor.set(ControlMode.PercentOutput,0);
+            master.set(ControlMode.PercentOutput,0);
         }
     }
 
@@ -33,7 +38,7 @@ public class Winch extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(ControlMode.PercentOutput,retractSpeed);
+            master.set(ControlMode.PercentOutput,retractSpeed);
         }
 
         @Override
