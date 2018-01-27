@@ -19,8 +19,8 @@ class DriveTrain extends Subsystem {
     private final int CPR = 4096;
 
     private final double wheelDiameter = 0.5;
-    private final double wheelCircumference = wheelDiameter*Math.PI;
-    private final int CPF = (int) (CPR/wheelCircumference);
+    private final double wheelCircumference = wheelDiameter * Math.PI;
+    private final int CPF = (int) (CPR / wheelCircumference);
 
     private final MecanumDrive drive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
 
@@ -79,48 +79,69 @@ class DriveTrain extends Subsystem {
         }
     }
 
-    class DriveEncoder extends PerpetualCommand {
+    class DriveEncoder extends Command {
         private final double distance;
         private final double speed;
+        private final double precision;
 
         /**
          * Drive forward a specific distance
+         *
          * @param distance the distance in feet
          */
-        DriveEncoder(double distance){
-            this(distance,0.5);
+        DriveEncoder(double distance) {
+            this(distance, 0.5);
         }
 
         /**
          * Drive forward a specific distance
-         * @param distance the distance in feet
-         * @param speed the speed on the range (0,1]
+         *
+         * @param distance  the distance in feet
+         * @param speed     the speed on the range (0,1]
          */
         DriveEncoder(double distance, double speed){
+            this(distance,speed,2f/12);
+        }
+
+        /**
+         * Drive forward a specific distance
+         *
+         * @param distance  the distance in feet
+         * @param speed     the speed on the range (0,1]
+         * @param precision the precision in feet within which the command will finish
+         */
+        DriveEncoder(double distance, double speed, double precision) {
+            this.precision = precision;
             requires(DriveTrain.this);
             this.distance = distance;
             this.speed = speed;
         }
 
         @Override
-        protected void initialize(){
-            rearLeft.setSelectedSensorPosition(0,0,10);
-            rearRight.setSelectedSensorPosition(0,0,10);
-            rearLeft.config_kP(0,0.125,10);
-            rearRight.config_kP(0,0.125,10);
-            rearLeft.configPeakOutputForward(speed,10);
-            rearRight.configPeakOutputForward(speed,10);
-            rearLeft.configPeakOutputReverse(-speed,10);
-            rearRight.configPeakOutputReverse(-speed,10);
+        protected void initialize() {
+            rearLeft.setSelectedSensorPosition(0, 0, 10);
+            rearRight.setSelectedSensorPosition(0, 0, 10);
+            rearLeft.config_kP(0, 0.125, 10);
+            rearRight.config_kP(0, 0.125, 10);
+            rearLeft.configPeakOutputForward(speed, 10);
+            rearRight.configPeakOutputForward(speed, 10);
+            rearLeft.configPeakOutputReverse(-speed, 10);
+            rearRight.configPeakOutputReverse(-speed, 10);
 
             frontLeft.follow(rearLeft);
             frontRight.follow(rearRight);
         }
 
         @Override
-        protected void execute(){
-            rearLeft.set(ControlMode.Position,CPF*distance);
-            rearRight.set(ControlMode.Position,CPF*distance);
+        protected void execute() {
+            rearLeft.set(ControlMode.Position, CPF * distance);
+            rearRight.set(ControlMode.Position, CPF * distance);
+        }
+
+        @Override
+        protected boolean isFinished() {
+            return (rearLeft.getClosedLoopError(0) < CPF * precision) &&
+                    (rearRight.getClosedLoopError(0) < CPF * precision);
         }
     }
 }
