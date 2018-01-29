@@ -6,10 +6,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.PIDCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.command.*;
+
 
 @SuppressWarnings("FieldCanBeLocal")
 class DriveTrain extends Subsystem {
@@ -155,7 +153,7 @@ class DriveTrain extends Subsystem {
         }
 
         TurnByAmount(double angle, double tolerance){
-            super(1f/90,0,0);
+            super(1f/20,0,0);
             this.tolerance = tolerance;
             requires(DriveTrain.this);
             getPIDController().setContinuous();
@@ -177,6 +175,16 @@ class DriveTrain extends Subsystem {
         @Override
         protected void usePIDOutput(double output) {
             drive.set(DriveMode.PercentOutput,0,output,0);
+        }
+    }
+
+    class CalibrateGyro extends InstantCommand{
+        CalibrateGyro(){
+            setRunWhenDisabled(true);
+        }
+        @Override
+        protected void execute(){
+            gyro.calibrate();
         }
     }
 }
