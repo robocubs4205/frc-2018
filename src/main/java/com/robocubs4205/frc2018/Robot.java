@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit(){
-        driveTrain.new DriveEncoder(1).start();
+        driveTrain.new TurnByAmount(90).start();
     }
 
     @Override
