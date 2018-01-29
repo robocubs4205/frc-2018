@@ -5,8 +5,10 @@ import com.ctre.phoenix.drive.MecanumDrive;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -16,13 +18,15 @@ class DriveTrain extends Subsystem {
     private TalonSRX rearLeft = new TalonSRX(12);
     private TalonSRX rearRight = new TalonSRX(10);
 
+    private final MecanumDrive drive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
+
+    private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+
     private final int CPR = 4096;
 
     private final double wheelDiameter = (5f+3f/8)/12;
     private final double wheelCircumference = wheelDiameter * Math.PI;
     private final int CPF = (int) (CPR / wheelCircumference);
-
-    private final MecanumDrive drive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
 
     private final double proportionalLateralSpeed = 1;
     private final double proportionalTurnSpeed = 1;
@@ -49,7 +53,7 @@ class DriveTrain extends Subsystem {
         }
     }
 
-    class Mecanum extends Command {
+    class Mecanum extends PerpetualCommand {
         private final double forward;
         private final double turn;
         private final double strafe;
@@ -71,11 +75,6 @@ class DriveTrain extends Subsystem {
                     forward * proportionalLateralSpeed,
                     turn * proportionalTurnSpeed,
                     strafe * proportionalLateralSpeed);
-        }
-
-        @Override
-        protected boolean isFinished() {
-            return false;
         }
     }
 
@@ -144,6 +143,33 @@ class DriveTrain extends Subsystem {
         protected boolean isFinished() {
             return (Math.abs(rearLeft.getSelectedSensorPosition(0)-CPF*distance) < CPF * precision)&&
                     (Math.abs(rearRight.getSelectedSensorPosition(0)-CPF*distance) < CPF * precision);
+        }
+    }
+
+    class TurnByAmount extends PIDCommand {
+
+        TurnByAmount(double angle){
+            super(1f/90,0,0);
+            requires(DriveTrain.this);
+            getPIDController().setContinuous();
+            getPIDController().setInputRange(0,360);
+            getPIDController().setOutputRange(-1,1);
+            setSetpoint(gyro.getAngle()+angle);
+        }
+
+        @Override
+        protected boolean isFinished() {
+            return false;
+        }
+
+        @Override
+        protected double returnPIDInput() {
+            return gyro.getAngle();
+        }
+
+        @Override
+        protected void usePIDOutput(double output) {
+            drive.set(DriveMode.PercentOutput,0,output,0);
         }
     }
 }
