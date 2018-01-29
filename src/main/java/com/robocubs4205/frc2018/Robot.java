@@ -54,14 +54,25 @@ public class Robot extends TimedRobot {
         Scheduler.getInstance().run();
     }
 
+    private boolean firstRun = true;
+
     @Override
     public void disabledInit() {
-        new FullStop().start();
+        if(firstRun){
+            new CommandGroup(){
+                {
+                    addSequential(new FullStop());
+                    addSequential(driveTrain.new CalibrateGyro());
+                    setRunWhenDisabled(true);
+                }
+            }.start();
+            firstRun = false;
+        }
+        else new FullStop().start();
     }
 
     @Override
     public void autonomousInit(){
-        driveTrain.new TurnByAmount(90).start();
     }
 
     @Override
