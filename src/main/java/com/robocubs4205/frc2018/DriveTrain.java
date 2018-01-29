@@ -81,7 +81,7 @@ class DriveTrain extends Subsystem {
     class DriveEncoder extends Command {
         private final double distance;
         private final double speed;
-        private final double precision;
+        private final double tolerance;
 
         /**
          * Drive forward a specific distance
@@ -107,13 +107,13 @@ class DriveTrain extends Subsystem {
          *
          * @param distance  the distance in feet
          * @param speed     the speed on the range (0,1]
-         * @param precision the precision in feet within which the command will finish
+         * @param tolerance the tolerance in feet within which the command will finish
          */
-        DriveEncoder(double distance, double speed, double precision) {
+        DriveEncoder(double distance, double speed, double tolerance) {
             requires(DriveTrain.this);
             this.distance = distance;
             this.speed = speed;
-            this.precision = precision;
+            this.tolerance = tolerance;
         }
 
         @Override
@@ -141,15 +141,22 @@ class DriveTrain extends Subsystem {
 
         @Override
         protected boolean isFinished() {
-            return (Math.abs(rearLeft.getSelectedSensorPosition(0)-CPF*distance) < CPF * precision)&&
-                    (Math.abs(rearRight.getSelectedSensorPosition(0)-CPF*distance) < CPF * precision);
+            return (Math.abs(rearLeft.getSelectedSensorPosition(0)-CPF*distance) < CPF * tolerance)&&
+                    (Math.abs(rearRight.getSelectedSensorPosition(0)-CPF*distance) < CPF * tolerance);
         }
     }
 
     class TurnByAmount extends PIDCommand {
 
+        private final double tolerance;
+
         TurnByAmount(double angle){
+            this(angle,5);
+        }
+
+        TurnByAmount(double angle, double tolerance){
             super(1f/90,0,0);
+            this.tolerance = tolerance;
             requires(DriveTrain.this);
             getPIDController().setContinuous();
             getPIDController().setInputRange(0,360);
@@ -159,7 +166,7 @@ class DriveTrain extends Subsystem {
 
         @Override
         protected boolean isFinished() {
-            return false;
+            return Math.abs(getPIDController().getError())< tolerance;
         }
 
         @Override
