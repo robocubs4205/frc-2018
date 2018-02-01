@@ -158,7 +158,7 @@ class DriveTrain extends Subsystem {
             requires(DriveTrain.this);
             getPIDController().setContinuous();
             getPIDController().setInputRange(0,360);
-            getPIDController().setOutputRange(-1,1);
+            getPIDController().setOutputRange(-0.3,0.3);
             setSetpoint(gyro.getAngle()+angle);
         }
 
