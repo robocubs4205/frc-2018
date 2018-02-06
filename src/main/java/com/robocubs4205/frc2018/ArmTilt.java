@@ -26,7 +26,7 @@ class ArmTilt extends Subsystem{
         }
     }
 
-    class Raise extends Command {
+    class Raise extends PerpetualCommand {
 
         Raise(){
             requires(ArmTilt.this);
@@ -36,14 +36,9 @@ class ArmTilt extends Subsystem{
         protected void execute(){
             motor.set(raiseSpeed);
         }
-
-        @Override
-        protected boolean isFinished() {
-            return false;
-        }
     }
 
-    class Lower extends Command {
+    class Lower extends PerpetualCommand {
         Lower(){
             requires(ArmTilt.this);
         }
@@ -51,11 +46,6 @@ class ArmTilt extends Subsystem{
         @Override
         protected void execute(){
             motor.set(-lowerSpeed);
-        }
-
-        @Override
-        protected boolean isFinished() {
-            return false;
         }
     }
 }
