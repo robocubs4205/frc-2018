@@ -1,5 +1,6 @@
 package com.robocubs4205.frc2018;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -113,11 +114,15 @@ public class Robot extends TimedRobot {
     }
 
     class PutCubeInSwitch extends CommandGroup {
-        PutCubeInSwitch(Alliance alliance, SwitchPosition switchPosition, StartingPosition startingPosition) {
-            if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue && startingPosition == StartingPosition.Left) ||
-                    (switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Red && startingPosition == StartingPosition.Right) ||
-                    (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Blue && startingPosition == StartingPosition.Right) ||
-                    (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red && startingPosition == StartingPosition.Left)) {
+        PutCubeInSwitch(SwitchPosition switchPosition, StartingPosition startingPosition) {
+            if ((switchPosition == SwitchPosition.BlueLeft && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue
+                    && startingPosition == StartingPosition.Left) ||
+                    (switchPosition == SwitchPosition.BlueLeft && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red
+                            && startingPosition == StartingPosition.Right) ||
+                    (switchPosition == SwitchPosition.BlueRight && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue
+                            && startingPosition == StartingPosition.Right) ||
+                    (switchPosition == SwitchPosition.BlueRight && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red
+                            && startingPosition == StartingPosition.Left)) {
                 //robot starts on same side as switch
                 System.out.println("Robot starts on same side as switch target");
 
@@ -136,10 +141,14 @@ public class Robot extends TimedRobot {
                 //put cube in box
                 addSequential(new PutCubeIn());
 
-            } else if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue && startingPosition == StartingPosition.Right) ||
-                    (switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Red && startingPosition == StartingPosition.Left) ||
-                    (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Blue && startingPosition == StartingPosition.Left) ||
-                    (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red && startingPosition == StartingPosition.Right)) {
+            } else if ((switchPosition == SwitchPosition.BlueLeft && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue
+                    && startingPosition == StartingPosition.Right) ||
+                    (switchPosition == SwitchPosition.BlueLeft && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red
+                            && startingPosition == StartingPosition.Left) ||
+                    (switchPosition == SwitchPosition.BlueRight && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue
+                            && startingPosition == StartingPosition.Left) ||
+                    (switchPosition == SwitchPosition.BlueRight && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red
+                            && startingPosition == StartingPosition.Right)) {
                 //robot starts on opposite side of switch
                 System.out.println("Robot starts on opposite side as switch target");
 
@@ -175,8 +184,10 @@ public class Robot extends TimedRobot {
                 final double clearance = 3;
                 addSequential(driveTrain.new DriveEncoder(AllianceStationToSwitch - RobotLength - clearance));
                 //drive around switch
-                if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue) ||
-                        (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red)) {
+                if ((switchPosition == SwitchPosition.BlueLeft
+                        && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue) ||
+                        (switchPosition == SwitchPosition.BlueRight
+                                && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red)) {
                     //go left
                     addSequential(driveTrain.new TurnByAmount(-90));
                 } else { //go right
@@ -184,18 +195,22 @@ public class Robot extends TimedRobot {
                 }
                 addSequential(driveTrain.new DriveEncoder(SwitchWidth / 2 + RobotLength / 2 + clearance));
                 //turn back forward
-                if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue) ||
-                        (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red)) {
+                if ((switchPosition == SwitchPosition.BlueLeft
+                        && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue) ||
+                        (switchPosition == SwitchPosition.BlueRight
+                                && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red)) {
                     //went left
                     addSequential(driveTrain.new TurnByAmount(90));
                 } else { //went right
                     addSequential(driveTrain.new TurnByAmount(-90));
                 }
                 //line up with switch
-                addSequential(driveTrain.new DriveEncoder(RobotLength/2 + clearance + SwitchDepth / 2));
+                addSequential(driveTrain.new DriveEncoder(RobotLength / 2 + clearance + SwitchDepth / 2));
                 //turn toward switch
-                if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue) ||
-                        (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red)) {
+                if ((switchPosition == SwitchPosition.BlueLeft
+                        && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue) ||
+                        (switchPosition == SwitchPosition.BlueRight
+                                && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red)) {
                     //went left
                     addSequential(driveTrain.new TurnByAmount(90));
                 } else { //went right
