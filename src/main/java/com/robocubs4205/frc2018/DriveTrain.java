@@ -139,6 +139,7 @@ class DriveTrain extends Subsystem {
 
         @Override
         protected boolean isFinished() {
+            //getClosedLoopError not used since it sometimes erroneously reports 0
             return (Math.abs(rearLeft.getSelectedSensorPosition(0)-CPF*distance) < CPF * tolerance)&&
                     (Math.abs(rearRight.getSelectedSensorPosition(0)-CPF*distance) < CPF * tolerance);
         }
