@@ -18,7 +18,7 @@ public class Robot extends TimedRobot {
     private Gripper gripper = new Gripper();
     private Winch winch = new Winch();
 
-    public Robot(){
+    public Robot() {
         driveStick.setTwistChannel(3);
         controlStick.setTwistChannel(3);
         driveStick.setThrottleChannel(2);
@@ -44,9 +44,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
 
         if (driveStick.getTrigger()) {
-            driveTrain.new Mecanum(-driveStick.getY(), driveStick.getTwist(),driveStick.getX()).start();
+            driveTrain.new Mecanum(-driveStick.getY(), driveStick.getTwist(), driveStick.getX()).start();
         } else {
-            driveTrain.new Mecanum(-driveStick.getY() / 2, driveStick.getTwist()/2,driveStick.getX() / 2).start();
+            driveTrain.new Mecanum(-driveStick.getY() / 2, driveStick.getTwist() / 2, driveStick.getX() / 2).start();
         }
 
         armStage2.new Proportional(-controlStick.getY()).start();
@@ -58,8 +58,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        if(firstRun){
-            new CommandGroup(){
+        if (firstRun) {
+            new CommandGroup() {
                 {
                     addSequential(new FullStop());
                     addSequential(driveTrain.new CalibrateGyro());
@@ -67,16 +67,15 @@ public class Robot extends TimedRobot {
                 }
             }.start();
             firstRun = false;
-        }
-        else new FullStop().start();
+        } else new FullStop().start();
     }
 
     @Override
-    public void autonomousInit(){
+    public void autonomousInit() {
     }
 
     @Override
-    public void autonomousPeriodic(){
+    public void autonomousPeriodic() {
         Scheduler.getInstance().run();
     }
 
@@ -90,5 +89,177 @@ public class Robot extends TimedRobot {
             addParallel(winch.new Stop());
             setRunWhenDisabled(true);
         }
+    }
+
+    private static final double FieldLength = 54;
+    private static final double AutoLine = 10;
+    private static final double RobotLength = 29.0 / 12;
+    private static final double AllianceStationWidth = 22;
+    private static final double AllianceStationToSwitch = 14;
+    private static final double SwitchDepth = 4 + 8.0 / 12;
+    private static final double SwitchWidth = 12 + 9.5 / 12;
+
+    class DriveToAutoLine extends CommandGroup {
+        DriveToAutoLine() {
+            //add 8 inch margin to ensure crossing
+            addSequential(driveTrain.new DriveEncoder(AutoLine - RobotLength + 8.0 / 12));
+        }
+    }
+
+    class DriveToCenterOfNullTeritory extends CommandGroup {
+        DriveToCenterOfNullTeritory() {
+            addSequential(driveTrain.new DriveEncoder(FieldLength / 2 - RobotLength / 2));
+        }
+    }
+
+    class PutCubeInSwitch extends CommandGroup {
+        PutCubeInSwitch(Alliance alliance, SwitchPosition switchPosition, StartingPosition startingPosition) {
+            if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue && startingPosition == StartingPosition.Left) ||
+                    (switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Red && startingPosition == StartingPosition.Right) ||
+                    (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Blue && startingPosition == StartingPosition.Right) ||
+                    (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red && startingPosition == StartingPosition.Left)) {
+                //robot starts on same side as switch
+                System.out.println("Robot starts on same side as switch target");
+
+                //drive forward until in line with switch
+                addSequential(driveTrain.new DriveEncoder(AllianceStationToSwitch + SwitchDepth / 2));
+
+                //turn toward switch
+                if (startingPosition == StartingPosition.Left) {
+                    addSequential(driveTrain.new TurnByAmount(90));
+                } else { //Right
+                    addSequential(driveTrain.new TurnByAmount(-90));
+                }
+                //drive to switch
+                addSequential(driveTrain.new DriveEncoder(AllianceStationWidth / 2 - SwitchWidth / 2 - RobotLength, 0.2));
+
+                //put cube in box
+                addSequential(new PutCubeIn());
+
+            } else if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue && startingPosition == StartingPosition.Right) ||
+                    (switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Red && startingPosition == StartingPosition.Left) ||
+                    (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Blue && startingPosition == StartingPosition.Left) ||
+                    (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red && startingPosition == StartingPosition.Right)) {
+                //robot starts on opposite side of switch
+                System.out.println("Robot starts on opposite side as switch target");
+
+                //drive past switch
+                addSequential(driveTrain.new DriveEncoder(AllianceStationWidth + SwitchDepth * 3 / 2));
+                //drive behind switch
+                if (startingPosition == StartingPosition.Left) {
+                    addSequential(driveTrain.new TurnByAmount(90));
+                } else { //Right
+                    addSequential(driveTrain.new TurnByAmount(-90));
+                }
+                addSequential(driveTrain.new DriveEncoder(AllianceStationWidth));
+                //drive back to in-line with switch
+                if (startingPosition == StartingPosition.Left) {
+                    addSequential(driveTrain.new TurnByAmount(90));
+                } else { //Right
+                    addSequential(driveTrain.new TurnByAmount(-90));
+                }
+                addSequential(driveTrain.new DriveEncoder(SwitchDepth));
+                //point toward switch
+                if (startingPosition == StartingPosition.Left) {
+                    addSequential(driveTrain.new TurnByAmount(90));
+                } else { //Right
+                    addSequential(driveTrain.new TurnByAmount(-90));
+                }
+                //drive to switch
+                addSequential(driveTrain.new DriveEncoder(AllianceStationWidth / 2 - SwitchWidth / 2 - RobotLength, 0.2));
+
+                //put cube in box
+                addSequential(new PutCubeIn());
+            } else if (startingPosition == StartingPosition.Center) {
+                System.out.println("Robot starts in center");
+                final double clearance = 3;
+                addSequential(driveTrain.new DriveEncoder(AllianceStationToSwitch - RobotLength - clearance));
+                //drive around switch
+                if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue) ||
+                        (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red)) {
+                    //go left
+                    addSequential(driveTrain.new TurnByAmount(-90));
+                } else { //go right
+                    addSequential(driveTrain.new TurnByAmount(90));
+                }
+                addSequential(driveTrain.new DriveEncoder(SwitchWidth / 2 + RobotLength / 2 + clearance));
+                //turn back forward
+                if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue) ||
+                        (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red)) {
+                    //went left
+                    addSequential(driveTrain.new TurnByAmount(90));
+                } else { //went right
+                    addSequential(driveTrain.new TurnByAmount(-90));
+                }
+                //line up with switch
+                addSequential(driveTrain.new DriveEncoder(RobotLength/2 + clearance + SwitchDepth / 2));
+                //turn toward switch
+                if ((switchPosition == SwitchPosition.BlueLeft && alliance == Alliance.Blue) ||
+                        (switchPosition == SwitchPosition.BlueRight && alliance == Alliance.Red)) {
+                    //went left
+                    addSequential(driveTrain.new TurnByAmount(90));
+                } else { //went right
+                    addSequential(driveTrain.new TurnByAmount(-90));
+                }
+                //drive to switch
+                addSequential(driveTrain.new DriveEncoder(clearance, 0.2));
+
+                // put cube in box
+                addSequential(new PutCubeIn());
+            } else {
+                System.err.println("This combination of starting position, team, and switch position has no corresponding routine");
+            }
+        }
+
+        private class PutCubeIn extends CommandGroup {
+            PutCubeIn() {
+                addSequential(armStage1.new Extend() {
+                    {
+                        setTimeout(1);
+                    }
+
+                    @Override
+                    protected boolean isFinished() {
+                        return super.isFinished() || isTimedOut();
+                    }
+                });
+                addSequential(armTilt.new Raise() {
+                    {
+                        setTimeout(1);
+                    }
+
+                    @Override
+                    protected boolean isFinished() {
+                        return super.isFinished() || isTimedOut();
+                    }
+                });
+                addSequential(gripper.new Open() {
+                    {
+                        setTimeout(0.25);
+                    }
+
+                    @Override
+                    protected boolean isFinished() {
+                        return super.isFinished() || isTimedOut();
+                    }
+                });
+            }
+        }
+    }
+
+    enum SwitchPosition {
+        BlueLeft,
+        BlueRight
+    }
+
+    enum Alliance {
+        Red,
+        Blue
+    }
+
+    enum StartingPosition {
+        Left,
+        Right,
+        Center
     }
 }
