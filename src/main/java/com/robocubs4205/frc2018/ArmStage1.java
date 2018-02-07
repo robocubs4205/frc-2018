@@ -26,7 +26,7 @@ public class ArmStage1 extends Subsystem{
         }
     }
 
-    class Extend extends Command {
+    class Extend extends PerpetualCommand {
 
         Extend(){
             requires(ArmStage1.this);
@@ -36,14 +36,9 @@ public class ArmStage1 extends Subsystem{
         protected void execute(){
             motor.set(-extendSpeed);
         }
-
-        @Override
-        protected boolean isFinished() {
-            return false;
-        }
     }
 
-    class Retract extends Command {
+    class Retract extends PerpetualCommand {
 
         Retract(){
             requires(ArmStage1.this);
@@ -52,11 +47,6 @@ public class ArmStage1 extends Subsystem{
         @Override
         protected void execute(){
             motor.set(retractSpeed);
-        }
-
-        @Override
-        protected boolean isFinished() {
-            return false;
         }
     }
 }

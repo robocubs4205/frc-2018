@@ -26,7 +26,7 @@ public class ArmStage2 extends Subsystem {
         }
     }
 
-    class Proportional extends Command {
+    class Proportional extends PerpetualCommand {
         private final double value;
 
         Proportional(double value) {
@@ -37,11 +37,6 @@ public class ArmStage2 extends Subsystem {
         @Override
         protected void execute() {
             motor.set(value * proportionalSpeed);
-        }
-
-        @Override
-        protected boolean isFinished() {
-            return false;
         }
     }
 }

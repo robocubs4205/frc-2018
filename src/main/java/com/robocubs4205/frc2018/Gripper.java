@@ -30,7 +30,7 @@ class Gripper extends Subsystem {
         }
     }
 
-    class Open extends Command {
+    class Open extends PerpetualCommand {
 
         Open() {
             requires(Gripper.this);
@@ -41,14 +41,9 @@ class Gripper extends Subsystem {
             leftMotor.set(openSpeed);
             rightMotor.set(-openSpeed);
         }
-
-        @Override
-        protected boolean isFinished() {
-            return false;
-        }
     }
 
-    class Close extends Command {
+    class Close extends PerpetualCommand {
         Close() {
             requires(Gripper.this);
         }
@@ -57,11 +52,6 @@ class Gripper extends Subsystem {
         protected void execute() {
             leftMotor.set(-closeSpeed);
             rightMotor.set(closeSpeed);
-        }
-
-        @Override
-        protected boolean isFinished() {
-            return false;
         }
     }
 }

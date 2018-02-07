@@ -31,7 +31,7 @@ public class Winch extends Subsystem{
         }
     }
 
-    class Retract extends Command {
+    class Retract extends PerpetualCommand {
         Retract(){
             requires(Winch.this);
         }
@@ -39,11 +39,6 @@ public class Winch extends Subsystem{
         @Override
         protected void execute(){
             master.set(ControlMode.PercentOutput,retractSpeed);
-        }
-
-        @Override
-        protected boolean isFinished() {
-            return false;
         }
     }
 }
