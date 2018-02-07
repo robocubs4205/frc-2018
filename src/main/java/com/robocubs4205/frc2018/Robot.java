@@ -179,48 +179,6 @@ public class Robot extends TimedRobot {
 
                 //put cube in box
                 addSequential(new PutCubeIn());
-            } else if (startingPosition == StartingPosition.Center) {
-                System.out.println("Robot starts in center");
-                final double clearance = 3;
-                addSequential(driveTrain.new DriveEncoder(AllianceStationToSwitch - RobotLength - clearance));
-                //drive around switch
-                if ((switchPosition == SwitchPosition.BlueLeft
-                        && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue) ||
-                        (switchPosition == SwitchPosition.BlueRight
-                                && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red)) {
-                    //go left
-                    addSequential(driveTrain.new TurnByAmount(-90));
-                } else { //go right
-                    addSequential(driveTrain.new TurnByAmount(90));
-                }
-                addSequential(driveTrain.new DriveEncoder(SwitchWidth / 2 + RobotLength / 2 + clearance));
-                //turn back forward
-                if ((switchPosition == SwitchPosition.BlueLeft
-                        && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue) ||
-                        (switchPosition == SwitchPosition.BlueRight
-                                && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red)) {
-                    //went left
-                    addSequential(driveTrain.new TurnByAmount(90));
-                } else { //went right
-                    addSequential(driveTrain.new TurnByAmount(-90));
-                }
-                //line up with switch
-                addSequential(driveTrain.new DriveEncoder(RobotLength / 2 + clearance + SwitchDepth / 2));
-                //turn toward switch
-                if ((switchPosition == SwitchPosition.BlueLeft
-                        && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue) ||
-                        (switchPosition == SwitchPosition.BlueRight
-                                && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red)) {
-                    //went left
-                    addSequential(driveTrain.new TurnByAmount(90));
-                } else { //went right
-                    addSequential(driveTrain.new TurnByAmount(-90));
-                }
-                //drive to switch
-                addSequential(driveTrain.new DriveEncoder(clearance, 0.2));
-
-                // put cube in box
-                addSequential(new PutCubeIn());
             } else {
                 System.err.println("This combination of starting position, team, and switch position has no corresponding routine");
             }
@@ -265,11 +223,6 @@ public class Robot extends TimedRobot {
     enum SwitchPosition {
         BlueLeft,
         BlueRight
-    }
-
-    enum Alliance {
-        Red,
-        Blue
     }
 
     enum StartingPosition {
