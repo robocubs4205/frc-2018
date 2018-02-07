@@ -1,5 +1,6 @@
 package com.robocubs4205.frc2018;
 
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -25,6 +26,11 @@ public class Robot extends TimedRobot {
         driveStick.setThrottleChannel(2);
         driveStick.setThrottleChannel(2);
 
+    }
+
+    @Override
+    public void robotInit(){
+        CameraServer.getInstance().startAutomaticCapture();
     }
 
     @Override
@@ -160,7 +166,7 @@ public class Robot extends TimedRobot {
                 } else { //Right
                     addSequential(driveTrain.new TurnByAmount(-90));
                 }
-                addSequential(driveTrain.new DriveEncoder(AllianceStationWidth));
+                addSequential(driveTrain.new DriveEncoder(AllianceStationWidth-RobotLength));
                 //drive back to in-line with switch
                 if (startingPosition == StartingPosition.Left) {
                     addSequential(driveTrain.new TurnByAmount(90));
