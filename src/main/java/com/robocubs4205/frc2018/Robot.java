@@ -5,8 +5,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
 
@@ -20,6 +23,8 @@ public class Robot extends TimedRobot {
     private Gripper gripper = new Gripper();
     private Winch winch = new Winch();
 
+    private SendableChooser<Command> autonomousChooser = new SendableChooser<>();
+
     public Robot() {
         driveStick.setTwistChannel(3);
         controlStick.setTwistChannel(3);
@@ -31,6 +36,9 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit(){
         CameraServer.getInstance().startAutomaticCapture();
+        autonomousChooser.addDefault("Do Nothing",new FullStop());
+        autonomousChooser.addObject("Cross Auto Line", new DriveToAutoLine());
+        SmartDashboard.putData("Auto List",autonomousChooser);
     }
 
     @Override
@@ -79,6 +87,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        autonomousChooser.getSelected().start();
     }
 
     @Override
