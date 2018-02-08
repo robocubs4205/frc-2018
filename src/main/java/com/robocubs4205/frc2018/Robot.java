@@ -5,11 +5,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.ArrayList;
 
 public class Robot extends TimedRobot {
 
@@ -23,7 +23,16 @@ public class Robot extends TimedRobot {
     private Gripper gripper = new Gripper();
     private Winch winch = new Winch();
 
-    private SendableChooser<Command> autonomousChooser = new SendableChooser<>();
+    private final String NoActionAutoString = "Do Nothing";
+    private final String DriveToAutoLineAutoString = "Drive to Auto Line";
+    private final String DriveToNullTerritoryAutoString = "Drive to Null Territory";
+
+    private final ArrayList<String> autoStrings = new ArrayList<>();
+    {
+        autoStrings.add(NoActionAutoString);
+        autoStrings.add(DriveToAutoLineAutoString);
+        autoStrings.add(DriveToNullTerritoryAutoString);
+    }
 
     public Robot() {
         driveStick.setTwistChannel(3);
@@ -36,9 +45,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit(){
         CameraServer.getInstance().startAutomaticCapture();
-        autonomousChooser.addDefault("Do Nothing",new FullStop());
-        autonomousChooser.addObject("Cross Auto Line", new DriveToAutoLine());
-        SmartDashboard.putData("Auto List",autonomousChooser);
+        SmartDashboard.putStringArray("Auto List", (String[]) autoStrings.toArray());
     }
 
     @Override
@@ -87,7 +94,18 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        autonomousChooser.getSelected().start();
+        String autoString = SmartDashboard.getString("Auto Selector","");
+        switch (autoString) {
+            case NoActionAutoString:
+                new FullStop().start();
+                break;
+            case DriveToAutoLineAutoString:
+                new DriveToAutoLine().start();
+                break;
+            case DriveToNullTerritoryAutoString:
+                new DriveToCenterOfNullTeritory().start();
+                break;
+        }
     }
 
     @Override
