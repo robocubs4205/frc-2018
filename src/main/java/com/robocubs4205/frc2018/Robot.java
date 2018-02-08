@@ -24,12 +24,14 @@ public class Robot extends TimedRobot {
     private Winch winch = new Winch();
 
     private final String NoActionAutoString = "Do Nothing";
+    private final String OneFootWonderAutoString = "One Foot Wonder";
     private final String DriveToAutoLineAutoString = "Drive to Auto Line";
     private final String DriveToNullTerritoryAutoString = "Drive to Null Territory";
 
     private final ArrayList<String> autoStrings = new ArrayList<>();
     {
         autoStrings.add(NoActionAutoString);
+        autoStrings.add(OneFootWonderAutoString);
         autoStrings.add(DriveToAutoLineAutoString);
         autoStrings.add(DriveToNullTerritoryAutoString);
     }
@@ -45,7 +47,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit(){
         CameraServer.getInstance().startAutomaticCapture();
-        SmartDashboard.putStringArray("Auto List", (String[]) autoStrings.toArray());
+        SmartDashboard.putStringArray("Auto List",autoStrings.toArray(new String[autoStrings.size()]));
     }
 
     @Override
@@ -104,6 +106,9 @@ public class Robot extends TimedRobot {
                 break;
             case DriveToNullTerritoryAutoString:
                 new DriveToCenterOfNullTeritory().start();
+                break;
+            case OneFootWonderAutoString:
+                driveTrain.new DriveEncoder(1).start();
                 break;
         }
     }
