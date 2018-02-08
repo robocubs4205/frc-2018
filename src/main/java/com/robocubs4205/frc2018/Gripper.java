@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 @SuppressWarnings("FieldCanBeLocal")
 class Gripper extends Subsystem {
-    private final double openSpeed = 0.5;
-    private final double closeSpeed = 0.5;
+    private final double openSpeed = 0.75;
+    private final double closeSpeed = 0.75;
     private final Talon rightMotor = new Talon(3);
     private final Talon leftMotor = new Talon(0);
 
