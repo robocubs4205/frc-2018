@@ -2,12 +2,11 @@ package com.robocubs4205.frc2018;
 
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 @SuppressWarnings("FieldCanBeLocal")
-class Gripper extends Subsystem {
+class Manipulator extends Subsystem {
     private final double openSpeed = 0.75;
     private final double closeSpeed = 0.75;
     private final double outSpeed = 1;
@@ -31,7 +30,7 @@ class Gripper extends Subsystem {
 
     class Stop extends InstantCommand {
         Stop() {
-            requires(Gripper.this);
+            requires(Manipulator.this);
         }
 
         @Override
@@ -46,7 +45,7 @@ class Gripper extends Subsystem {
     class Open extends PerpetualCommand {
 
         Open() {
-            requires(Gripper.this);
+            requires(Manipulator.this);
         }
 
         @Override
@@ -58,7 +57,7 @@ class Gripper extends Subsystem {
 
     class Close extends PerpetualCommand {
         Close() {
-            requires(Gripper.this);
+            requires(Manipulator.this);
         }
 
         @Override
@@ -70,7 +69,7 @@ class Gripper extends Subsystem {
 
     class Out extends PerpetualCommand {
         Out(){
-            requires(Gripper.this);
+            requires(Manipulator.this);
         }
 
         @Override
@@ -82,7 +81,7 @@ class Gripper extends Subsystem {
 
     class In extends PerpetualCommand {
         In(){
-            requires(Gripper.this);
+            requires(Manipulator.this);
         }
 
         @Override

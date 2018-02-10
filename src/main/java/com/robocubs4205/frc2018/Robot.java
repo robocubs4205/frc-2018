@@ -20,7 +20,7 @@ public class Robot extends TimedRobot {
     private ArmStage1 armStage1 = new ArmStage1();
     private ArmStage2 armStage2 = new ArmStage2();
     private ArmTilt armTilt = new ArmTilt();
-    private Gripper gripper = new Gripper();
+    private Manipulator manipulator = new Manipulator();
     private Winch winch = new Winch();
     private Roller roller = new Roller();
 
@@ -53,15 +53,15 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        new JoystickButton(controlStick, 1).whileActive(gripper.new Close());
-        new JoystickButton(controlStick, 2).whileActive(gripper.new Open());
+        new JoystickButton(controlStick, 1).whileActive(manipulator.new Close());
+        new JoystickButton(controlStick, 2).whileActive(manipulator.new Open());
 
         new JoystickButton(controlStick, 3).whileActive(armStage1.new Extend());
         new JoystickButton(controlStick, 5).whileActive(armStage1.new Retract());
 
 
-        new JoystickButton(controlStick, 4).whileActive(gripper.new Out());
-        new JoystickButton(controlStick, 6).whileActive(gripper.new In());
+        new JoystickButton(controlStick, 4).whileActive(manipulator.new Out());
+        new JoystickButton(controlStick, 6).whileActive(manipulator.new In());
 
         new JoystickButton(driveStick, 4).whileActive(armTilt.new Raise());
         new JoystickButton(driveStick, 6).whileActive(armTilt.new Lower());
@@ -132,7 +132,7 @@ public class Robot extends TimedRobot {
             addParallel(armTilt.new Stop());
             addParallel(armStage1.new Stop());
             addParallel(armStage2.new Stop());
-            addParallel(gripper.new Stop());
+            addParallel(manipulator.new Stop());
             addParallel(winch.new Stop());
             setRunWhenDisabled(true);
         }
@@ -253,7 +253,7 @@ public class Robot extends TimedRobot {
                         return super.isFinished() || isTimedOut();
                     }
                 });
-                addSequential(gripper.new Open() {
+                addSequential(manipulator.new Open() {
                     {
                         setTimeout(0.25);
                     }
