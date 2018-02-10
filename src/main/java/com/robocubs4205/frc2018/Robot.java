@@ -53,15 +53,15 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        new JoystickButton(controlStick, 1).whileActive(manipulator.new Close());
-        new JoystickButton(controlStick, 2).whileActive(manipulator.new Open());
+        new JoystickButton(controlStick, 1).whileActive(manipulator.gripper.new Close());
+        new JoystickButton(controlStick, 2).whileActive(manipulator.gripper.new Open());
 
         new JoystickButton(controlStick, 3).whileActive(armStage1.new Extend());
         new JoystickButton(controlStick, 5).whileActive(armStage1.new Retract());
 
 
-        new JoystickButton(controlStick, 4).whileActive(manipulator.new Out());
-        new JoystickButton(controlStick, 6).whileActive(manipulator.new In());
+        new JoystickButton(controlStick, 4).whileActive(manipulator.belt.new Out());
+        new JoystickButton(controlStick, 6).whileActive(manipulator.belt.new In());
 
         new JoystickButton(driveStick, 4).whileActive(armTilt.new Raise());
         new JoystickButton(driveStick, 6).whileActive(armTilt.new Lower());
@@ -253,7 +253,7 @@ public class Robot extends TimedRobot {
                         return super.isFinished() || isTimedOut();
                     }
                 });
-                addSequential(manipulator.new Open() {
+                addSequential(manipulator.gripper.new Open() {
                     {
                         setTimeout(0.25);
                     }

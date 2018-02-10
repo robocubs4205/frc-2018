@@ -2,92 +2,127 @@ package com.robocubs4205.frc2018;
 
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 @SuppressWarnings("FieldCanBeLocal")
-class Manipulator extends Subsystem {
-    private final double openSpeed = 0.75;
-    private final double closeSpeed = 0.75;
-    private final double outSpeed = 1;
-    private final double inSpeed = 1;
-    private final Talon rightMotor = new Talon(3);
-    private final Talon leftMotor = new Talon(0);
-    private final Spark rightBeltMotor = new Spark(5);
-    private final Spark leftBeltMotor = new Spark(6);
+class Manipulator {
+    final Gripper gripper = new Gripper();
+    final Belt belt = new Belt();
 
-
-    {
-        leftMotor.setInverted(true);
-        rightBeltMotor.setInverted(true);
-        leftBeltMotor.setInverted(true);
+    class Stop extends CommandGroup{
+        Stop(){
+            addParallel(gripper.new Stop());
+            addParallel(belt.new Stop());
+        }
     }
 
-    @Override
-    protected void initDefaultCommand() {
-        setDefaultCommand(new Stop());
-    }
+    class Gripper extends Subsystem{
+        private final Talon rightMotor = new Talon(3);
+        private final Talon leftMotor = new Talon(0);
 
-    class Stop extends InstantCommand {
-        Stop() {
-            requires(Manipulator.this);
+        private final double openSpeed = 0.75;
+        private final double closeSpeed = 0.75;
+
+        private Gripper(){
+            leftMotor.setInverted(true);
         }
 
         @Override
-        protected void execute() {
-            rightMotor.set(0);
-            leftMotor.set(0);
-            leftBeltMotor.set(0);
-            rightBeltMotor.set(0);
+        protected void initDefaultCommand() {
+            setDefaultCommand(new Stop());
+        }
+
+        class Stop extends InstantCommand {
+            Stop() {
+                requires(Gripper.this);
+            }
+
+            @Override
+            protected void execute() {
+                rightMotor.set(0);
+                leftMotor.set(0);
+            }
+        }
+
+        class Open extends PerpetualCommand {
+
+            Open() {
+                requires(Gripper.this);
+            }
+
+            @Override
+            protected void execute() {
+                leftMotor.set(openSpeed);
+                rightMotor.set(openSpeed);
+            }
+        }
+
+        class Close extends PerpetualCommand {
+            Close() {
+                requires(Gripper.this);
+            }
+
+            @Override
+            protected void execute() {
+                leftMotor.set(-closeSpeed);
+                rightMotor.set(-closeSpeed);
+            }
         }
     }
 
-    class Open extends PerpetualCommand {
+    class Belt extends Subsystem{
+        private final Spark rightMotor = new Spark(5);
+        private final Spark leftMotor = new Spark(6);
 
-        Open() {
-            requires(Manipulator.this);
+        private final double outSpeed = 1;
+        private final double inSpeed = 1;
+
+        private Belt(){
+            rightMotor.setInverted(true);
+            leftMotor.setInverted(true);
         }
 
         @Override
-        protected void execute() {
-            leftMotor.set(openSpeed);
-            rightMotor.set(openSpeed);
-        }
-    }
-
-    class Close extends PerpetualCommand {
-        Close() {
-            requires(Manipulator.this);
+        protected void initDefaultCommand() {
+            setDefaultCommand(new Stop());
         }
 
-        @Override
-        protected void execute() {
-            leftMotor.set(-closeSpeed);
-            rightMotor.set(-closeSpeed);
-        }
-    }
+        class Stop extends InstantCommand {
+            Stop() {
+                requires(Belt.this);
+            }
 
-    class Out extends PerpetualCommand {
-        Out(){
-            requires(Manipulator.this);
-        }
-
-        @Override
-        protected void execute(){
-            leftBeltMotor.set(outSpeed);
-            rightBeltMotor.set(outSpeed);
-        }
-    }
-
-    class In extends PerpetualCommand {
-        In(){
-            requires(Manipulator.this);
+            @Override
+            protected void execute() {
+                leftMotor.set(0);
+                rightMotor.set(0);
+            }
         }
 
-        @Override
-        protected void execute(){
-            leftBeltMotor.set(-inSpeed);
-            rightBeltMotor.set(-inSpeed);
+        class Out extends PerpetualCommand {
+            Out(){
+                requires(Belt.this);
+            }
+
+            @Override
+            protected void execute(){
+                leftMotor.set(outSpeed);
+                rightMotor.set(outSpeed);
+            }
+        }
+
+        class In extends PerpetualCommand {
+            In(){
+                requires(Belt.this);
+            }
+
+            @Override
+            protected void execute(){
+                leftMotor.set(-inSpeed);
+                rightMotor.set(-inSpeed);
+            }
         }
     }
 }
