@@ -12,6 +12,9 @@ class Gripper extends Subsystem {
     private final Talon rightMotor = new Talon(3);
     private final Talon leftMotor = new Talon(0);
 
+    {
+        leftMotor.setInverted(true);
+    }
 
     @Override
     protected void initDefaultCommand() {
@@ -39,7 +42,7 @@ class Gripper extends Subsystem {
         @Override
         protected void execute() {
             leftMotor.set(openSpeed);
-            rightMotor.set(-openSpeed);
+            rightMotor.set(openSpeed);
         }
     }
 
@@ -51,7 +54,7 @@ class Gripper extends Subsystem {
         @Override
         protected void execute() {
             leftMotor.set(-closeSpeed);
-            rightMotor.set(closeSpeed);
+            rightMotor.set(-closeSpeed);
         }
     }
 }
