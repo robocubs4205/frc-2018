@@ -1,14 +1,13 @@
 package com.robocubs4205.frc2018;
 
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 @SuppressWarnings("FieldCanBeLocal")
 class ArmTilt extends Subsystem{
-    private final double raiseSpeed = 1;
-    private final double lowerSpeed = 1;
+    private final double raisePower = 1;
+    private final double lowerPower = 1;
     private final Talon motor = new Talon(4);
 
     @Override
@@ -34,7 +33,7 @@ class ArmTilt extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(raiseSpeed);
+            motor.set(raisePower);
         }
     }
 
@@ -45,7 +44,7 @@ class ArmTilt extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(-lowerSpeed);
+            motor.set(-lowerPower);
         }
     }
 }

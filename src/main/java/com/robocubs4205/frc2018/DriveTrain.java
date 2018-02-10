@@ -28,8 +28,8 @@ class DriveTrain extends Subsystem {
     private final double wheelCircumference = wheelDiameter * Math.PI;
     private final int CPF = (int) (CPR / wheelCircumference);
 
-    private final double proportionalLateralSpeed = 1;
-    private final double proportionalTurnSpeed = 1;
+    private final double proportionalLateralPower = 1;
+    private final double proportionalTurnPower = 1;
 
     DriveTrain() {
         rearLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
@@ -68,14 +68,14 @@ class DriveTrain extends Subsystem {
         @Override
         protected void execute() {
             drive.arcadeDrive(
-                    forward * proportionalLateralSpeed,
-                    turn * proportionalTurnSpeed);
+                    forward * proportionalLateralPower,
+                    turn * proportionalTurnPower);
         }
     }
 
     class DriveEncoder extends Command {
         private final double distance;
-        private final double speed;
+        private final double power;
         private final double tolerance;
 
         /**
@@ -91,23 +91,23 @@ class DriveTrain extends Subsystem {
          * Drive forward a specific distance
          *
          * @param distance  the distance in feet
-         * @param speed     the speed on the range (0,1]
+         * @param power     the motor power on the range (0,1]
          */
-        DriveEncoder(double distance, double speed){
-            this(distance,speed,2f/12);
+        DriveEncoder(double distance, double power){
+            this(distance, power,2f/12);
         }
 
         /**
          * Drive forward a specific distance
          *
          * @param distance  the distance in feet
-         * @param speed     the speed on the range (0,1]
+         * @param power     the motor power on the range (0,1]
          * @param tolerance the tolerance in feet within which the command will finish
          */
-        DriveEncoder(double distance, double speed, double tolerance) {
+        DriveEncoder(double distance, double power, double tolerance) {
             requires(DriveTrain.this);
             this.distance = distance;
-            this.speed = speed;
+            this.power = power;
             this.tolerance = tolerance;
         }
 
@@ -117,10 +117,10 @@ class DriveTrain extends Subsystem {
             rearRight.setSelectedSensorPosition(0, 0, 10);
             rearLeft.config_kP(0, 0.125, 10);
             rearRight.config_kP(0, 0.125, 10);
-            rearLeft.configPeakOutputForward(speed, 10);
-            rearRight.configPeakOutputForward(speed, 10);
-            rearLeft.configPeakOutputReverse(-speed, 10);
-            rearRight.configPeakOutputReverse(-speed, 10);
+            rearLeft.configPeakOutputForward(power, 10);
+            rearRight.configPeakOutputForward(power, 10);
+            rearLeft.configPeakOutputReverse(-power, 10);
+            rearRight.configPeakOutputReverse(-power, 10);
             rearLeft.setSensorPhase(true);
             rearRight.setSensorPhase(false);
 

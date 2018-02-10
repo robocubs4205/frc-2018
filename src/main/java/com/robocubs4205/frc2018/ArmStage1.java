@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class ArmStage1 extends Subsystem{
-    private final double extendSpeed = 1;
-    private final double retractSpeed = 0.5;
+    private final double extendPower = 1;
+    private final double retractPower = 0.5;
     private final Talon motor = new Talon(1);
     @Override
     protected void initDefaultCommand() {
@@ -33,7 +33,7 @@ public class ArmStage1 extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(-extendSpeed);
+            motor.set(-extendPower);
         }
     }
 
@@ -45,7 +45,7 @@ public class ArmStage1 extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(retractSpeed);
+            motor.set(retractPower);
         }
     }
 }

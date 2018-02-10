@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Roller extends Subsystem{
     private final Spark motor = new Spark(7);
 
-    private final double outSpeed = 1;
-    private final double inSpeed = 1;
+    private final double outPower = 1;
+    private final double inPower = 1;
 
     {
         motor.setInverted(true);
@@ -36,7 +36,7 @@ public class Roller extends Subsystem{
         }
         @Override
         protected void execute(){
-            motor.set(outSpeed);
+            motor.set(outPower);
         }
     }
 
@@ -46,7 +46,7 @@ public class Roller extends Subsystem{
         }
         @Override
         protected void execute(){
-            motor.set(-inSpeed);
+            motor.set(-inPower);
         }
     }
 }

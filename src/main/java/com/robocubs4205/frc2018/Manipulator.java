@@ -22,8 +22,8 @@ class Manipulator {
         private final Talon rightMotor = new Talon(3);
         private final Talon leftMotor = new Talon(0);
 
-        private final double openSpeed = 0.75;
-        private final double closeSpeed = 0.75;
+        private final double openPower = 0.75;
+        private final double closePower = 0.75;
 
         private Gripper(){
             leftMotor.setInverted(true);
@@ -54,8 +54,8 @@ class Manipulator {
 
             @Override
             protected void execute() {
-                leftMotor.set(openSpeed);
-                rightMotor.set(openSpeed);
+                leftMotor.set(openPower);
+                rightMotor.set(openPower);
             }
         }
 
@@ -66,8 +66,8 @@ class Manipulator {
 
             @Override
             protected void execute() {
-                leftMotor.set(-closeSpeed);
-                rightMotor.set(-closeSpeed);
+                leftMotor.set(-closePower);
+                rightMotor.set(-closePower);
             }
         }
     }
@@ -76,8 +76,8 @@ class Manipulator {
         private final Spark rightMotor = new Spark(5);
         private final Spark leftMotor = new Spark(6);
 
-        private final double outSpeed = 1;
-        private final double inSpeed = 1;
+        private final double outPower = 1;
+        private final double inPower = 1;
 
         private Belt(){
             rightMotor.setInverted(true);
@@ -108,8 +108,8 @@ class Manipulator {
 
             @Override
             protected void execute(){
-                leftMotor.set(outSpeed);
-                rightMotor.set(outSpeed);
+                leftMotor.set(outPower);
+                rightMotor.set(outPower);
             }
         }
 
@@ -120,8 +120,8 @@ class Manipulator {
 
             @Override
             protected void execute(){
-                leftMotor.set(-inSpeed);
-                rightMotor.set(-inSpeed);
+                leftMotor.set(-inPower);
+                rightMotor.set(-inPower);
             }
         }
     }
