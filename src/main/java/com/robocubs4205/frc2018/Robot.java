@@ -42,7 +42,6 @@ public class Robot extends TimedRobot {
         controlStick.setTwistChannel(3);
         driveStick.setThrottleChannel(2);
         driveStick.setThrottleChannel(2);
-
     }
 
     @Override
@@ -75,13 +74,18 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
 
+
+
         if (driveStick.getTrigger()) {
             driveTrain.new Drive(
-                    -driveStick.getY() / 2,
-                    driveStick.getTwist() / 2,
-                    driveStick.getX()/2).start();
+                    Math.pow(-driveStick.getY() / 2,3),
+                    Math.pow(driveStick.getTwist() / 2,3),
+                    Math.pow(driveStick.getX()/2,3)).start();
         } else {
-            driveTrain.new Drive(-driveStick.getY(), driveStick.getTwist(),driveStick.getX()).start();
+            driveTrain.new Drive(
+                    Math.pow(-driveStick.getY(),3),
+                    Math.pow(driveStick.getTwist(),3),
+                    Math.pow(driveStick.getX(),3)).start();
         }
 
         armStage2.new Proportional(-controlStick.getY()).start();
