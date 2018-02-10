@@ -20,6 +20,7 @@ class Gripper extends Subsystem {
 
     {
         leftMotor.setInverted(true);
+        rightBeltMotor.setInverted(true);
         leftBeltMotor.setInverted(true);
     }
 
@@ -37,6 +38,8 @@ class Gripper extends Subsystem {
         protected void execute() {
             rightMotor.set(0);
             leftMotor.set(0);
+            leftBeltMotor.set(0);
+            rightBeltMotor.set(0);
         }
     }
 
