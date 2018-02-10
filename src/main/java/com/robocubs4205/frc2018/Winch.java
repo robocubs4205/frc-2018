@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Winch extends Subsystem{
+class Winch extends Subsystem{
     private final double retractPower = 0.75;
     private final TalonSRX master = new TalonSRX(14);
     private final TalonSRX slave = new TalonSRX(15);

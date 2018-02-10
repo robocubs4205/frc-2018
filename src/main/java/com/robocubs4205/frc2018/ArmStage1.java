@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ArmStage1 extends Subsystem{
+class ArmStage1 extends Subsystem{
     private final double extendPower = 1;
     private final double retractPower = 0.5;
     private final Talon motor = new Talon(1);

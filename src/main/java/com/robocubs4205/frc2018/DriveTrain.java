@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 @SuppressWarnings("FieldCanBeLocal")
 class DriveTrain extends Subsystem {
-    private WPI_TalonSRX frontLeft = new WPI_TalonSRX(13);
-    private WPI_TalonSRX frontRight = new WPI_TalonSRX(11);
-    private WPI_TalonSRX rearLeft = new WPI_TalonSRX(12);
-    private WPI_TalonSRX rearRight = new WPI_TalonSRX(10);
+    private final WPI_TalonSRX frontLeft = new WPI_TalonSRX(13);
+    private final WPI_TalonSRX frontRight = new WPI_TalonSRX(11);
+    private final WPI_TalonSRX rearLeft = new WPI_TalonSRX(12);
+    private final WPI_TalonSRX rearRight = new WPI_TalonSRX(10);
 
     private final DifferentialDrive drive = new DifferentialDrive(
             new SpeedControllerGroup(frontLeft, rearLeft),

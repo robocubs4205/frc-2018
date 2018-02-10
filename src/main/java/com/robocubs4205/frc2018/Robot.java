@@ -13,16 +13,16 @@ import java.util.ArrayList;
 
 public class Robot extends TimedRobot {
 
-    private Joystick driveStick = new Joystick(0);
-    private Joystick controlStick = new Joystick(1);
+    private final Joystick driveStick = new Joystick(0);
+    private final Joystick controlStick = new Joystick(1);
 
-    private DriveTrain driveTrain = new DriveTrain();
-    private ArmStage1 armStage1 = new ArmStage1();
-    private ArmStage2 armStage2 = new ArmStage2();
-    private ArmTilt armTilt = new ArmTilt();
-    private Manipulator manipulator = new Manipulator();
-    private Winch winch = new Winch();
-    private Roller roller = new Roller();
+    private final DriveTrain driveTrain = new DriveTrain();
+    private final ArmStage1 armStage1 = new ArmStage1();
+    private final ArmStage2 armStage2 = new ArmStage2();
+    private final ArmTilt armTilt = new ArmTilt();
+    private final Manipulator manipulator = new Manipulator();
+    private final Winch winch = new Winch();
+    private final Roller roller = new Roller();
 
     private final String NoActionAutoString = "Do Nothing";
     private final String OneFootWonderAutoString = "One Foot Wonder";
@@ -118,7 +118,7 @@ public class Robot extends TimedRobot {
                 new DriveToAutoLine().start();
                 break;
             case DriveToNullTerritoryAutoString:
-                new DriveToCenterOfNullTeritory().start();
+                new DriveToCenterOfNullTerritory().start();
                 break;
             case OneFootWonderAutoString:
                 driveTrain.new DriveEncoder(1).start();
@@ -158,8 +158,8 @@ public class Robot extends TimedRobot {
         }
     }
 
-    class DriveToCenterOfNullTeritory extends CommandGroup {
-        DriveToCenterOfNullTeritory() {
+    class DriveToCenterOfNullTerritory extends CommandGroup {
+        DriveToCenterOfNullTerritory() {
             addSequential(driveTrain.new DriveEncoder(FieldLength / 2 - RobotLength / 2));
         }
     }
