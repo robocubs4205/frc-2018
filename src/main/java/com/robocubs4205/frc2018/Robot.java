@@ -68,9 +68,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
 
         if (driveStick.getTrigger()) {
-            driveTrain.new Mecanum(-driveStick.getY(), driveStick.getTwist(), driveStick.getX()).start();
+            driveTrain.new Arcade(-driveStick.getY(), driveStick.getTwist()).start();
         } else {
-            driveTrain.new Mecanum(-driveStick.getY() / 2, driveStick.getTwist() / 2, driveStick.getX() / 2).start();
+            driveTrain.new Arcade(-driveStick.getY() / 2, driveStick.getTwist() / 2).start();
         }
 
         armStage2.new Proportional(-controlStick.getY()).start();
@@ -151,6 +151,7 @@ public class Robot extends TimedRobot {
         }
     }
 
+    @SuppressWarnings("unused")
     class PutCubeInSwitch extends CommandGroup {
         PutCubeInSwitch(SwitchPosition switchPosition, StartingPosition startingPosition) {
             if ((switchPosition == SwitchPosition.BlueLeft && DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue
@@ -266,6 +267,6 @@ public class Robot extends TimedRobot {
     enum StartingPosition {
         Left,
         Right,
-        Center
+        @SuppressWarnings("unused") Center
     }
 }

@@ -2,7 +2,6 @@
 | Control         | Action                 |
 | --------------- | ---------------------- |
 | Stick Vertical  | Drive Forward/Backward |
-| Stick Horizontal| Strafe Left/Right      |
 | Stick Twist     | Turn                   |
 | Trigger (hold)  | Double Drive Speed     |
 | Button 2 (hold) | Pull in Winch          |
