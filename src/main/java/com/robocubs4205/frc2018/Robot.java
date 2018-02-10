@@ -103,6 +103,11 @@ public class Robot extends TimedRobot {
     }
 
     @Override
+    public void disabledPeriodic(){
+        Scheduler.getInstance().run();
+    }
+
+    @Override
     public void autonomousInit() {
         String autoString = SmartDashboard.getString("Auto Selector","");
         switch (autoString) {
