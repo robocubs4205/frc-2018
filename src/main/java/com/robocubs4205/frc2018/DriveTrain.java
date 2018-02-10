@@ -1,24 +1,22 @@
 package com.robocubs4205.frc2018;
 
+import com.ctre.phoenix.drive.DriveMode;
+import com.ctre.phoenix.drive.MecanumDrive;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.*;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 
 @SuppressWarnings("FieldCanBeLocal")
 class DriveTrain extends Subsystem {
-    private final WPI_TalonSRX frontLeft = new WPI_TalonSRX(13);
-    private final WPI_TalonSRX frontRight = new WPI_TalonSRX(11);
-    private final WPI_TalonSRX rearLeft = new WPI_TalonSRX(12);
-    private final WPI_TalonSRX rearRight = new WPI_TalonSRX(10);
+    private TalonSRX frontLeft = new TalonSRX(13);
+    private TalonSRX frontRight = new TalonSRX(11);
+    private TalonSRX rearLeft = new TalonSRX(12);
+    private TalonSRX rearRight = new TalonSRX(10);
 
-    private final DifferentialDrive drive = new DifferentialDrive(
-            new SpeedControllerGroup(frontLeft, rearLeft),
-            new SpeedControllerGroup(frontRight, rearRight));
+    private final MecanumDrive drive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
 
     private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
@@ -28,14 +26,12 @@ class DriveTrain extends Subsystem {
     private final double wheelCircumference = wheelDiameter * Math.PI;
     private final int CPF = (int) (CPR / wheelCircumference);
 
-    private final double proportionalLateralPower = 1;
-    private final double proportionalTurnPower = 1;
+    private final double proportionalLateralSpeed = 1;
+    private final double proportionalTurnSpeed = 1;
 
     DriveTrain() {
         rearLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         rearRight.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-        rearRight.setInverted(true);
-        frontRight.setInverted(true);
     }
 
     @Override
@@ -51,31 +47,38 @@ class DriveTrain extends Subsystem {
 
         @Override
         protected void initialize() {
-            drive.arcadeDrive(0, 0);
+            drive.set(DriveMode.PercentOutput, 0, 0);
         }
     }
 
-    class Arcade extends PerpetualCommand {
+    class Drive extends PerpetualCommand {
         private final double forward;
         private final double turn;
+        private final double strafe;
 
-        Arcade(double forward, double turn) {
+        Drive(double forward, double turn, double strafe) {
             this.forward = forward;
             this.turn = turn;
+            this.strafe = strafe;
             requires(DriveTrain.this);
+        }
+
+        public Drive(double forward, double turn) {
+            this(forward, turn, 0);
         }
 
         @Override
         protected void execute() {
-            drive.arcadeDrive(
-                    forward * proportionalLateralPower,
-                    turn * proportionalTurnPower);
+            drive.set(DriveMode.PercentOutput,
+                    forward * proportionalLateralSpeed,
+                    turn * proportionalTurnSpeed,
+                    strafe * proportionalLateralSpeed);
         }
     }
 
     class DriveEncoder extends Command {
         private final double distance;
-        private final double power;
+        private final double speed;
         private final double tolerance;
 
         /**
@@ -91,23 +94,23 @@ class DriveTrain extends Subsystem {
          * Drive forward a specific distance
          *
          * @param distance  the distance in feet
-         * @param power     the motor power on the range (0,1]
+         * @param speed     the speed on the range (0,1]
          */
-        DriveEncoder(double distance, double power){
-            this(distance, power,2f/12);
+        DriveEncoder(double distance, double speed){
+            this(distance,speed,2f/12);
         }
 
         /**
          * Drive forward a specific distance
          *
          * @param distance  the distance in feet
-         * @param power     the motor power on the range (0,1]
+         * @param speed     the speed on the range (0,1]
          * @param tolerance the tolerance in feet within which the command will finish
          */
-        DriveEncoder(double distance, double power, double tolerance) {
+        DriveEncoder(double distance, double speed, double tolerance) {
             requires(DriveTrain.this);
             this.distance = distance;
-            this.power = power;
+            this.speed = speed;
             this.tolerance = tolerance;
         }
 
@@ -117,10 +120,10 @@ class DriveTrain extends Subsystem {
             rearRight.setSelectedSensorPosition(0, 0, 10);
             rearLeft.config_kP(0, 0.125, 10);
             rearRight.config_kP(0, 0.125, 10);
-            rearLeft.configPeakOutputForward(power, 10);
-            rearRight.configPeakOutputForward(power, 10);
-            rearLeft.configPeakOutputReverse(-power, 10);
-            rearRight.configPeakOutputReverse(-power, 10);
+            rearLeft.configPeakOutputForward(speed, 10);
+            rearRight.configPeakOutputForward(speed, 10);
+            rearLeft.configPeakOutputReverse(-speed, 10);
+            rearRight.configPeakOutputReverse(-speed, 10);
             rearLeft.setSensorPhase(true);
             rearRight.setSensorPhase(false);
 
@@ -172,7 +175,7 @@ class DriveTrain extends Subsystem {
 
         @Override
         protected void usePIDOutput(double output) {
-            drive.arcadeDrive(0,output);
+            drive.set(DriveMode.PercentOutput,0,output,0);
         }
     }
 
