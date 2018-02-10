@@ -59,11 +59,12 @@ public class Robot extends TimedRobot {
         new JoystickButton(controlStick, 3).whileActive(armStage1.new Extend());
         new JoystickButton(controlStick, 5).whileActive(armStage1.new Retract());
 
-        new JoystickButton(driveStick, 4).whileActive(armTilt.new Raise());
-        new JoystickButton(driveStick, 6).whileActive(armTilt.new Lower());
 
         new JoystickButton(controlStick, 4).whileActive(gripper.new Out());
         new JoystickButton(controlStick, 6).whileActive(gripper.new In());
+
+        new JoystickButton(driveStick, 4).whileActive(armTilt.new Raise());
+        new JoystickButton(driveStick, 6).whileActive(armTilt.new Lower());
 
         new JoystickButton(driveStick, 2).whileActive(winch.new Retract());
 
