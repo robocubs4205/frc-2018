@@ -76,9 +76,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
 
         if (driveStick.getTrigger()) {
-            driveTrain.new Arcade(-driveStick.getY(), driveStick.getTwist()).start();
-        } else {
             driveTrain.new Arcade(-driveStick.getY() / 2, driveStick.getTwist() / 2).start();
+        } else {
+            driveTrain.new Arcade(-driveStick.getY(), driveStick.getTwist()).start();
         }
 
         armStage2.new Proportional(-controlStick.getY()).start();
