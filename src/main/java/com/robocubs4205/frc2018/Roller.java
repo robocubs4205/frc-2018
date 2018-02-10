@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class Roller extends Subsystem{
     private final Spark motor = new Spark(7);
 
@@ -45,7 +46,7 @@ public class Roller extends Subsystem{
         }
         @Override
         protected void execute(){
-            motor.set(inSpeed);
+            motor.set(-inSpeed);
         }
     }
 }
