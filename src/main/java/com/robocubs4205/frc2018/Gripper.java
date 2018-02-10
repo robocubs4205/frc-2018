@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 class Gripper extends Subsystem {
     private final double openSpeed = 0.75;
     private final double closeSpeed = 0.75;
-    private final double outSpeed = 0.5;
-    private final double inSpeed = 0.5;
+    private final double outSpeed = 1;
+    private final double inSpeed = 1;
     private final Talon rightMotor = new Talon(3);
     private final Talon leftMotor = new Talon(0);
     private final Spark rightBeltMotor = new Spark(5);
