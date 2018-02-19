@@ -1,12 +1,13 @@
 package com.robocubs4205.frc2018;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 @SuppressWarnings("FieldCanBeLocal")
 class Roller extends Subsystem{
-    private final Spark motor = new Spark(7);
+    private final WPI_TalonSRX motor = new WPI_TalonSRX(15);
 
     private final double outPower = 1;
     private final double inPower = 1;

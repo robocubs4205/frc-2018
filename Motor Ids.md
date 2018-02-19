@@ -16,4 +16,5 @@
 |Gripper Right  |Talon      |PWM  |3    |
 |Arm Tilt master|Talon      |PWM  |4    |
 |Arm Tilt slave |Talon      |PWM  |7    |
+|Roller         |Talon SRX  |CAN  |15   |
 
