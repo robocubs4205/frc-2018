@@ -4,11 +4,14 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+import java.time.Instant;
+
 @SuppressWarnings("FieldCanBeLocal")
 class ArmTilt extends Subsystem{
     private final double raisePower = 1;
     private final double lowerPower = 1;
-    private final Talon motor = new Talon(4);
+    private final Talon master = new Talon(4);
+    private final Talon slave = new Talon(7);
 
     @Override
     protected void initDefaultCommand() {
@@ -21,7 +24,8 @@ class ArmTilt extends Subsystem{
         }
         @Override
         protected void execute(){
-            motor.set(0);
+            master.set(0);
+            slave.set(master.getSpeed());
         }
     }
 
@@ -33,7 +37,8 @@ class ArmTilt extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(raisePower);
+            master.set(raisePower);
+            slave.set(master.getSpeed());
         }
     }
 
@@ -44,7 +49,8 @@ class ArmTilt extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(-lowerPower);
+            master.set(-lowerPower);
+            slave.set(master.getSpeed());
         }
     }
 }
