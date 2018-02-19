@@ -152,7 +152,7 @@ public class Robot extends TimedRobot {
 
     private static final double FieldLength = 54;
     private static final double AutoLine = 10;
-    private static final double RobotLength = 29.0 / 12;
+    private static final double RobotLength = 34.0 / 12;
     private static final double AllianceStationWidth = 22;
     private static final double AllianceStationToSwitch = 14;
     private static final double SwitchDepth = 4 + 8.0 / 12;

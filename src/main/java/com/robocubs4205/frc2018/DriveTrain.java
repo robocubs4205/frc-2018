@@ -22,7 +22,7 @@ class DriveTrain extends Subsystem {
 
     private final int CPR = 4096;
 
-    private final double wheelDiameter = (5f+3f/8)/12;
+    private final double wheelDiameter = 6f/12;
     private final double wheelCircumference = wheelDiameter * Math.PI;
     private final int CPF = (int) (CPR / wheelCircumference);
 
