@@ -10,11 +10,7 @@ class Roller extends Subsystem{
     private final WPI_TalonSRX motor = new WPI_TalonSRX(15);
 
     private final double outPower = 1;
-    private final double inPower = 1;
-
-    {
-        motor.setInverted(true);
-    }
+    private final double inPower = 0.25;
 
     @Override
     protected void initDefaultCommand() {

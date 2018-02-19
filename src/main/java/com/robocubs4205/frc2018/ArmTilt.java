@@ -8,8 +8,8 @@ import java.time.Instant;
 
 @SuppressWarnings("FieldCanBeLocal")
 class ArmTilt extends Subsystem{
-    private final double raisePower = 1;
-    private final double lowerPower = 1;
+    private final double raisePower = 0.5;
+    private final double lowerPower = 0.5;
     private final Talon master = new Talon(4);
     private final Talon slave = new Talon(7);
 
