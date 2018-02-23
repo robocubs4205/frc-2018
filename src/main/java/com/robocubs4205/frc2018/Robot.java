@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,6 +28,7 @@ public class Robot extends TimedRobot {
     private final String OneFootWonderAutoString = "One Foot Wonder";
     private final String DriveToAutoLineAutoString = "Drive to Auto Line";
     private final String DriveToNullTerritoryAutoString = "Drive to Null Territory";
+    private final String AdvancedAuto = "Advanced (Uses settings in \"Auto Config\" tab)";
 
     private final ArrayList<String> autoStrings = new ArrayList<>();
 
@@ -37,6 +37,7 @@ public class Robot extends TimedRobot {
         autoStrings.add(OneFootWonderAutoString);
         autoStrings.add(DriveToAutoLineAutoString);
         autoStrings.add(DriveToNullTerritoryAutoString);
+        autoStrings.add(AdvancedAuto);
     }
 
     public Robot() {
@@ -131,6 +132,9 @@ public class Robot extends TimedRobot {
             case OneFootWonderAutoString:
                 driveTrain.new DriveEncoder(1).start();
                 break;
+            case AdvancedAuto:
+                initAdvancedAuto();
+                break;
         }
     }
 
@@ -145,12 +149,16 @@ public class Robot extends TimedRobot {
     private final int SwitchSameSideActionNothing = 0;
     private final int SwitchSameSideActionProceed = 1;
     private final int SwitchSameSideActionScale = 3;
+    private final int SwitchSameSideActionAutoLine = 4;
+    private final int SwitchSameSideActionNullTerritory = 5;
 
     private final int SwitchOppositeSideActionNotFound = -1;
     private final int SwitchOppositeSideActionNothing = 0;
     private final int SwitchOppositeSideActionFrontCross = 1;
     private final int SwitchOppositeSideActionRearCross = 2;
     private final int SwitchOppositeSideActionScale = 3;
+    private final int SwitchOppositeSideActionAutoLine = 4;
+    private final int SwitchOppositeSideActionNullTerritory = 5;
 
     private final int SwitchRightSideActionNotFound = -1;
     private final int SwitchRightSideActionNothing = 0;
@@ -164,136 +172,145 @@ public class Robot extends TimedRobot {
     private final int CubePositionForks = 0;
     private final int CubePositionShelf = 1;
 
-    private void initSwitchAuto() {
-        int startingPosition = Integer.parseInt(SmartDashboard.getString("Starting Position", "-1"));
-        int switchOppositeSideAction =
-                Integer.parseInt(SmartDashboard.getString("Switch OppositeSideAction", "-1"));
-        int switchSameSideAction =
-                Integer.parseInt(SmartDashboard.getString("Switch Same Side Action", "-1"));
-        int switchRightSideAction =
-                Integer.parseInt(SmartDashboard.getString("Switch Right Side Action", "-1"));
-        int switchLeftSideAction =
-                Integer.parseInt(SmartDashboard.getString("Switch Left Side Action", "-1"));
-        int switchCubePosition =
-                Integer.parseInt(SmartDashboard.getString("Cube Position", "-1"));
-
-        if (startingPosition == StartingPositionNotFound ||
-                (startingPosition != StartingPositionCenter &&
-                        (switchOppositeSideAction == SwitchOppositeSideActionNotFound ||
-                                switchSameSideAction == SwitchSameSideActionNotFound)) ||
-                (startingPosition == StartingPositionCenter &&
-                        (switchRightSideAction == SwitchRightSideActionNotFound ||
-                                switchLeftSideAction == SwitchLeftSideActionNotFound))) {
-            System.err.println("Received incomplete autonomous configuration from drive station. Aborting.");
-            new Throwable().printStackTrace();
-            DriverStation.reportError("Recieved incomplete autonomous configuration from drive station. Aborting", false);
-            return;
-        }
-
-        SwitchCubePosition switchCubePositionEnum;
-        switch (switchCubePosition) {
-            case CubePositionForks:
-                switchCubePositionEnum = SwitchCubePosition.Forks;
-                break;
-            case CubePositionShelf:
-                switchCubePositionEnum = SwitchCubePosition.Shelf;
-            default:
-                System.err.println("Autonomous case not implemented. Aborting.");
+    private void initAdvancedAuto() {
+        try {
+            int startingPosition = Integer.parseInt(SmartDashboard.getString("Starting Position", "-1"));
+            int switchOppositeSideAction =
+                    Integer.parseInt(SmartDashboard.getString("Switch OppositeSideAction", "-1"));
+            int switchSameSideAction =
+                    Integer.parseInt(SmartDashboard.getString("Switch Same Side Action", "-1"));
+            int switchRightSideAction =
+                    Integer.parseInt(SmartDashboard.getString("Switch Right Side Action", "-1"));
+            int switchLeftSideAction =
+                    Integer.parseInt(SmartDashboard.getString("Switch Left Side Action", "-1"));
+            int switchCubePosition =
+                    Integer.parseInt(SmartDashboard.getString("Cube Position", "-1"));
+            if (startingPosition == StartingPositionNotFound ||
+                    (startingPosition != StartingPositionCenter &&
+                            (switchOppositeSideAction == SwitchOppositeSideActionNotFound ||
+                                    switchSameSideAction == SwitchSameSideActionNotFound)) ||
+                    (startingPosition == StartingPositionCenter &&
+                            (switchRightSideAction == SwitchRightSideActionNotFound ||
+                                    switchLeftSideAction == SwitchLeftSideActionNotFound))) {
+                System.err.println("Received incomplete autonomous configuration from drive station. Aborting.");
                 new Throwable().printStackTrace();
-                DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                DriverStation.reportError("Recieved incomplete autonomous configuration from drive station. Aborting", false);
                 return;
-        }
+            }
 
-        SwitchPosition switchPosition = SwitchPosition.Left;
-        String gameData = DriverStation.getInstance().getGameSpecificMessage();
-        if (gameData.length() != 3) {
-            System.err.println("Invalid game data received from FMS. Aborting.");
-            new Throwable().printStackTrace();
-            DriverStation.reportError("Invalid game data received from FMS. Aborting.",false);
-        }
-        else if (gameData.charAt(0) == 'L') switchPosition = SwitchPosition.Left;
-        else if (gameData.charAt(0) == 'R') switchPosition = SwitchPosition.Right;
-        else {
-            System.err.println("Invalid game data received from FMS. Aborting.");
-            new Throwable().printStackTrace();
-            DriverStation.reportError("Invalid game data received from FMS. Aborting.",false);
-        }
+            SwitchCubePosition switchCubePositionEnum;
+            switch (switchCubePosition) {
+                case CubePositionForks:
+                    switchCubePositionEnum = SwitchCubePosition.Forks;
+                    break;
+                case CubePositionShelf:
+                    switchCubePositionEnum = SwitchCubePosition.Shelf;
+                default:
+                    System.err.println("Autonomous case not implemented. Aborting.");
+                    new Throwable().printStackTrace();
+                    DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                    return;
+            }
 
-        switch (startingPosition) {
-            case StartingPositionLeft:
-                if(switchPosition==SwitchPosition.Left){
-                    if (switchSameSideAction == SwitchSameSideActionProceed)
-                        new SwitchAutoSameSideFarLeftOrRight(StartingPosition.Left, switchCubePositionEnum).start();
-                    else if (switchSameSideAction == SwitchSameSideActionScale)
-                        new ScaleAutoFarLeftOrRight(StartingPosition.Left);
-                    else if(switchSameSideAction != SwitchSameSideActionNothing) {
-                        System.err.println("Autonomous case not implemented. Aborting.");
-                        new Throwable().printStackTrace();
-                        DriverStation.reportError("Autonomous case not implemented. Aborting.",false);
+            SwitchPosition switchPosition = SwitchPosition.Left;
+            String gameData = DriverStation.getInstance().getGameSpecificMessage();
+            if (gameData.length() != 3) {
+                System.err.println("Invalid game data received from FMS. Aborting.");
+                new Throwable().printStackTrace();
+                DriverStation.reportError("Invalid game data received from FMS. Aborting.", false);
+            } else if (gameData.charAt(0) == 'L') switchPosition = SwitchPosition.Left;
+            else if (gameData.charAt(0) == 'R') switchPosition = SwitchPosition.Right;
+            else {
+                System.err.println("Invalid game data received from FMS. Aborting.");
+                new Throwable().printStackTrace();
+                DriverStation.reportError("Invalid game data received from FMS. Aborting.", false);
+            }
+
+            switch (startingPosition) {
+                case StartingPositionLeft:
+                    if (switchPosition == SwitchPosition.Left) {
+                        if (switchSameSideAction == SwitchSameSideActionProceed)
+                            new SwitchAutoSameSideFarLeftOrRight(StartingPosition.Left, switchCubePositionEnum).start();
+                        else if (switchSameSideAction == SwitchSameSideActionScale)
+                            new ScaleAutoFarLeftOrRight(StartingPosition.Left);
+                        else if(switchSameSideAction == SwitchSameSideActionAutoLine)
+                            new DriveToAutoLine().start();
+                        else if (switchSameSideAction == SwitchSameSideActionNullTerritory)
+                            new DriveToCenterOfNullTerritory().start();
+                        else if (switchSameSideAction != SwitchSameSideActionNothing) {
+                            System.err.println("Autonomous case not implemented. Aborting.");
+                            new Throwable().printStackTrace();
+                            DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                        }
+                    } else {
+                        if (switchOppositeSideAction == SwitchOppositeSideActionRearCross)
+                            new SwitchAutoOppositeSideCrossBehind(StartingPosition.Left, switchCubePositionEnum).start();
+                        else if (switchOppositeSideAction == SwitchOppositeSideActionScale)
+                            new ScaleAutoFarLeftOrRight(StartingPosition.Left);
+                        else if(switchOppositeSideAction == SwitchOppositeSideActionAutoLine)
+                            new DriveToAutoLine().start();
+                        else if (switchOppositeSideAction == SwitchOppositeSideActionNullTerritory)
+                            new DriveToCenterOfNullTerritory().start();
+                        else if (switchOppositeSideAction != SwitchOppositeSideActionNothing) {
+                            System.err.println("Autonomous case not implemented. Aborting.");
+                            new Throwable().printStackTrace();
+                            DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                        }
                     }
-                }
-                else{
-                    if (switchOppositeSideAction == SwitchOppositeSideActionRearCross)
-                        new SwitchAutoOppositeSideCrossBehind(StartingPosition.Left, switchCubePositionEnum).start();
-                    else if(switchOppositeSideAction == SwitchOppositeSideActionScale)
-                        new ScaleAutoFarLeftOrRight(StartingPosition.Left);
-                    else if(switchOppositeSideAction != SwitchOppositeSideActionNothing) {
-                        System.err.println("Autonomous case not implemented. Aborting.");
-                        new Throwable().printStackTrace();
-                        DriverStation.reportError("Autonomous case not implemented. Aborting.",false);
+                    break;
+                case StartingPositionRight:
+                    if (switchPosition == SwitchPosition.Right) {
+                        if (switchSameSideAction == SwitchSameSideActionProceed)
+                            new SwitchAutoSameSideFarLeftOrRight(StartingPosition.Right, switchCubePositionEnum).start();
+                        else if (switchSameSideAction == SwitchSameSideActionScale)
+                            new ScaleAutoFarLeftOrRight(StartingPosition.Right);
+                        else if (switchSameSideAction != SwitchSameSideActionNothing) {
+                            System.err.println("Autonomous case not implemented. Aborting.");
+                            new Throwable().printStackTrace();
+                            DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                        }
+                    } else {
+                        if (switchOppositeSideAction == SwitchOppositeSideActionRearCross)
+                            new SwitchAutoOppositeSideCrossBehind(StartingPosition.Right, switchCubePositionEnum).start();
+                        else if (switchOppositeSideAction == SwitchOppositeSideActionScale)
+                            new ScaleAutoFarLeftOrRight(StartingPosition.Right);
+                        else if (switchOppositeSideAction != SwitchOppositeSideActionNothing) {
+                            System.err.println("Autonomous case not implemented. Aborting.");
+                            new Throwable().printStackTrace();
+                            DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                        }
                     }
-                }
-                break;
-            case StartingPositionRight:
-                if(switchPosition==SwitchPosition.Right){
-                    if (switchSameSideAction == SwitchSameSideActionProceed)
-                        new SwitchAutoSameSideFarLeftOrRight(StartingPosition.Right, switchCubePositionEnum).start();
-                    else if (switchSameSideAction == SwitchSameSideActionScale)
-                        new ScaleAutoFarLeftOrRight(StartingPosition.Right);
-                    else if(switchSameSideAction != SwitchSameSideActionNothing) {
-                        System.err.println("Autonomous case not implemented. Aborting.");
-                        new Throwable().printStackTrace();
-                        DriverStation.reportError("Autonomous case not implemented. Aborting.",false);
-                    }
-                }
-                else{
-                    if (switchOppositeSideAction == SwitchOppositeSideActionRearCross)
-                        new SwitchAutoOppositeSideCrossBehind(StartingPosition.Right, switchCubePositionEnum).start();
-                    else if(switchOppositeSideAction == SwitchOppositeSideActionScale)
-                        new ScaleAutoFarLeftOrRight(StartingPosition.Right);
-                    else if(switchOppositeSideAction != SwitchOppositeSideActionNothing) {
-                        System.err.println("Autonomous case not implemented. Aborting.");
-                        new Throwable().printStackTrace();
-                        DriverStation.reportError("Autonomous case not implemented. Aborting.",false);
-                    }
-                }
-                break;
-            case StartingPositionCenterLeft:
-                if(switchPosition==SwitchPosition.Left){
-                    if(switchSameSideAction == SwitchSameSideActionProceed)
-                        new SwitchAutoSameSideCenterLeftOrRight(switchCubePositionEnum);
-                    else if(switchSameSideAction != SwitchSameSideActionNothing){
-                        System.err.println("Autonomous case not implemented. Aborting.");
-                        new Throwable().printStackTrace();
-                        DriverStation.reportError("Autonomous case not implemented. Aborting.",false);
-                    }
-                }
-                else System.err.println("Autonomous case not implemented. Aborting.");
-                break;
-            case StartingPositionCenterRight:
-                if(switchPosition==SwitchPosition.Right){
-                    if(switchSameSideAction == SwitchSameSideActionProceed)
-                        new SwitchAutoSameSideCenterLeftOrRight(switchCubePositionEnum);
-                    else if(switchSameSideAction != SwitchSameSideActionNothing){
-                        System.err.println("Autonomous case not implemented. Aborting.");
-                        new Throwable().printStackTrace();
-                        DriverStation.reportError("Autonomous case not implemented. Aborting.",false);
-                    }
-                }
-                else System.err.println("Autonomous case not implemented. Aborting.");
-                break;
-            default:
-                System.err.println("Autonomous case not implemented. Aborting.");
+                    break;
+                case StartingPositionCenterLeft:
+                    if (switchPosition == SwitchPosition.Left) {
+                        if (switchSameSideAction == SwitchSameSideActionProceed)
+                            new SwitchAutoSameSideCenterLeftOrRight(switchCubePositionEnum);
+                        else if (switchSameSideAction != SwitchSameSideActionNothing) {
+                            System.err.println("Autonomous case not implemented. Aborting.");
+                            new Throwable().printStackTrace();
+                            DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                        }
+                    } else System.err.println("Autonomous case not implemented. Aborting.");
+                    break;
+                case StartingPositionCenterRight:
+                    if (switchPosition == SwitchPosition.Right) {
+                        if (switchSameSideAction == SwitchSameSideActionProceed)
+                            new SwitchAutoSameSideCenterLeftOrRight(switchCubePositionEnum);
+                        else if (switchSameSideAction != SwitchSameSideActionNothing) {
+                            System.err.println("Autonomous case not implemented. Aborting.");
+                            new Throwable().printStackTrace();
+                            DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                        }
+                    } else System.err.println("Autonomous case not implemented. Aborting.");
+                    break;
+                default:
+                    System.err.println("Autonomous case not implemented. Aborting.");
+            }
+        }
+        catch (NumberFormatException e){
+            System.err.println("Invalid data received from the Driver Station. Aborting.");
+            e.printStackTrace();
+            DriverStation.reportError("Invalid data received from the Driver Station. Aborting.",false);
         }
     }
 
