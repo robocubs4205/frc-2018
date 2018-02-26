@@ -385,6 +385,11 @@ public class Robot extends TimedRobot {
             } else { //Right
                 addSequential(driveTrain.new TurnByAmount(-90));
             }
+
+            //prepare arm
+            if(cubePosition == SwitchCubePosition.Forks)
+                addSequential(armStage1.new Extend(),1);
+
             //drive to switch
             {
                 double distance = AllianceStationWidth / 2 - SwitchWidth / 2 - RobotBumperLength;
@@ -400,8 +405,9 @@ public class Robot extends TimedRobot {
             //put cube in box
             switch (cubePosition) {
                 case Forks:
-                    addSequential(armStage1.new Extend(),1);
                     addSequential(manipulator.belt.new Out(),1);
+                case Shelf:
+                    addSequential(roller.new Out(), 1);
             }
 
         }
@@ -457,6 +463,11 @@ public class Robot extends TimedRobot {
             } else { //Right
                 addSequential(driveTrain.new TurnByAmount(-90));
             }
+
+            //prepare arm
+            if(cubePosition == SwitchCubePosition.Forks)
+                addSequential(armStage1.new Extend(),1);
+
             //drive to switch
             {
                 double distance = AllianceStationWidth / 2 - SwitchWidth / 2 - RobotBumperLength;
@@ -468,13 +479,21 @@ public class Robot extends TimedRobot {
                 }
             }
             //put cube in box
-            addSequential(armStage1.new Extend(),1);
-            addSequential(manipulator.belt.new Out(),1);
+            switch (cubePosition) {
+                case Forks:
+                    addSequential(manipulator.belt.new Out(),1);
+                case Shelf:
+                    addSequential(roller.new Out(), 1);
+            }
         }
     }
 
     private class SwitchAutoSameSideCenterLeftOrRight extends CommandGroup {
         SwitchAutoSameSideCenterLeftOrRight(SwitchCubePosition cubePosition) {
+
+            //prepare arm
+            if(cubePosition == SwitchCubePosition.Forks)
+                addSequential(armStage1.new Extend(),1);
 
             if (cubePosition == SwitchCubePosition.Forks) addSequential(armStage1.new Extend(),1);
             {
@@ -486,8 +505,13 @@ public class Robot extends TimedRobot {
                         addSequential(driveTrain.new DriveEncoder(-distance));
                 }
             }
-            if (cubePosition == SwitchCubePosition.Forks) addSequential(manipulator.belt.new Out(),1);
-            else if (cubePosition == SwitchCubePosition.Shelf) addSequential(roller.new Out());
+            //put cube in box
+            switch (cubePosition) {
+                case Forks:
+                    addSequential(manipulator.belt.new Out(),1);
+                case Shelf:
+                    addSequential(roller.new Out(), 1);
+            }
         }
     }
 
