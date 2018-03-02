@@ -31,6 +31,8 @@ public class Robot extends TimedRobot {
     private final String AdvancedAuto = "Advanced (Uses settings in \"Auto Config\" tab)";
 
     private final ArrayList<String> autoStrings = new ArrayList<>();
+    private final JoystickButton armStage1UpButton = new JoystickButton(controlStick, 3);
+    private JoystickButton armStage1DownButton = new JoystickButton(controlStick, 5);
 
     {
         autoStrings.add(NoActionAutoString);
@@ -58,8 +60,8 @@ public class Robot extends TimedRobot {
         new JoystickButton(controlStick, 1).whileActive(manipulator.gripper.new Close());
         new JoystickButton(controlStick, 2).whileActive(manipulator.gripper.new Open());
 
-        new JoystickButton(controlStick, 3).whileActive(armStage1.new Extend());
-        new JoystickButton(controlStick, 5).whileActive(armStage1.new Retract());
+        armStage1UpButton.whileActive(armStage1.new Extend());
+        armStage1DownButton.whileActive(armStage1.new Retract());
 
 
         new JoystickButton(controlStick, 4).whileActive(manipulator.belt.new Out());
@@ -73,6 +75,8 @@ public class Robot extends TimedRobot {
         new JoystickButton(driveStick, 3).whileActive(roller.new Out());
         new JoystickButton(driveStick, 5).whileActive(roller.new In());
     }
+
+    private boolean isHoldingArm = false;
 
     @Override
     public void teleopPeriodic() {
@@ -89,6 +93,14 @@ public class Robot extends TimedRobot {
                     Math.pow(driveStick.getTwist(), 3),
                     Math.pow(driveStick.getX(), 3)).start();
         }
+
+        DriverStation.reportWarning("Up Button: "+armStage1UpButton.get(), false);
+        DriverStation.reportWarning("Down Button: "+armStage1DownButton.get(), false);
+        DriverStation.reportWarning("Holding: "+isHoldingArm, false);
+
+        if(armStage1UpButton.get()) isHoldingArm = true;
+        if(armStage1DownButton.get()) isHoldingArm = false;
+        if(isHoldingArm &&!armStage1UpButton.get()&&!armStage1DownButton.get()) armStage1.new Hold().start();
 
         armStage2.new Proportional(-controlStick.getY()).start();
 
@@ -336,8 +348,8 @@ public class Robot extends TimedRobot {
     private static final double AutoLine = 10;
     private static final double RobotBumperLength = 34.0 / 12;
     private static final double AllianceStationWidth = 22;
-    private static final double AllianceStationToSwitch = 14;
     private static final double SwitchDepth = 4 + 8.0 / 12;
+    private static final double AllianceStationToSwitch = 14-SwitchDepth/12;
     private static final double SwitchWidth = 12 + 9.5 / 12;
     private static final double ScaleWidth = 15;
 
