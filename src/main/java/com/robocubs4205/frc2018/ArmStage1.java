@@ -9,6 +9,7 @@ class ArmStage1 extends Subsystem{
     private final double extendPower = 1;
     private final double retractPower = 0.5;
     private final Talon motor = new Talon(1);
+
     @Override
     protected void initDefaultCommand() {
         setDefaultCommand(new Stop());
@@ -33,7 +34,7 @@ class ArmStage1 extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(-extendPower);
+            motor.set(extendPower);
         }
     }
 
@@ -45,7 +46,17 @@ class ArmStage1 extends Subsystem{
 
         @Override
         protected void execute(){
-            motor.set(retractPower);
+            motor.set(-retractPower);
+        }
+    }
+
+    class Hold extends PerpetualCommand  {
+        Hold(){
+            requires(ArmStage1.this);
+        }
+        @Override
+        protected void execute(){
+            motor.set(0.3);
         }
     }
 }
