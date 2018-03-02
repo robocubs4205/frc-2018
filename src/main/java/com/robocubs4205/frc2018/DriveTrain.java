@@ -4,6 +4,7 @@ import com.ctre.phoenix.drive.DriveMode;
 import com.ctre.phoenix.drive.MecanumDrive;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.command.*;
@@ -32,6 +33,9 @@ class DriveTrain extends Subsystem {
     DriveTrain() {
         rearLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         rearRight.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+
+        frontRight.setInverted(true);
+        rearRight.setInverted(true);
     }
 
     @Override
@@ -97,7 +101,7 @@ class DriveTrain extends Subsystem {
          * @param speed     the speed on the range (0,1]
          */
         DriveEncoder(double distance, double speed){
-            this(distance,speed,2f/12);
+            this(distance,speed,3f/12);
         }
 
         /**
@@ -125,10 +129,15 @@ class DriveTrain extends Subsystem {
             rearLeft.configPeakOutputReverse(-speed, 10);
             rearRight.configPeakOutputReverse(-speed, 10);
             rearLeft.setSensorPhase(true);
-            rearRight.setSensorPhase(false);
+            rearRight.setSensorPhase(true);
 
             frontLeft.follow(rearLeft);
             frontRight.follow(rearRight);
+
+            frontLeft.setNeutralMode(NeutralMode.Brake);
+            frontRight.setNeutralMode(NeutralMode.Brake);
+            rearRight.setNeutralMode(NeutralMode.Brake);
+            rearLeft.setNeutralMode(NeutralMode.Brake);
         }
 
         @Override
