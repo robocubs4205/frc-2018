@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj.command.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 class DriveTrain extends Subsystem {
-    private TalonSRX frontLeft = new TalonSRX(13);
-    private TalonSRX frontRight = new TalonSRX(11);
-    private TalonSRX rearLeft = new TalonSRX(12);
-    private TalonSRX rearRight = new TalonSRX(10);
+    private final TalonSRX frontLeft = new TalonSRX(13);
+    private final TalonSRX frontRight = new TalonSRX(11);
+    private final TalonSRX rearLeft = new TalonSRX(12);
+    private final TalonSRX rearRight = new TalonSRX(10);
 
     private final MecanumDrive drive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
 

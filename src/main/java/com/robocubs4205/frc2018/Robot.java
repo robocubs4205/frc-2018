@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class Robot extends TimedRobot {
 
     private final Joystick driveStick = new Joystick(0);
@@ -32,7 +33,7 @@ public class Robot extends TimedRobot {
 
     private final ArrayList<String> autoStrings = new ArrayList<>();
     private final JoystickButton armStage1UpButton = new JoystickButton(controlStick, 3);
-    private JoystickButton armStage1DownButton = new JoystickButton(controlStick, 5);
+    private final JoystickButton armStage1DownButton = new JoystickButton(controlStick, 5);
 
     {
         autoStrings.add(NoActionAutoString);
@@ -213,6 +214,7 @@ public class Robot extends TimedRobot {
                     break;
                 case CubePositionShelf:
                     switchCubePositionEnum = SwitchCubePosition.Shelf;
+                    break;
                 default:
                     System.err.println("Autonomous case not implemented. Aborting.");
                     new Throwable().printStackTrace();
@@ -221,7 +223,7 @@ public class Robot extends TimedRobot {
             }
 
             SwitchPosition switchPosition = SwitchPosition.Left;
-            ScalePosiiton scalePosiiton = ScalePosiiton.Left;
+            ScalePosition scalePosition = ScalePosition.Left;
             String gameData = DriverStation.getInstance().getGameSpecificMessage();
             if (gameData.length() != 3) {
                 System.err.println("Invalid game data received from FMS. Aborting.");
@@ -235,8 +237,8 @@ public class Robot extends TimedRobot {
                     new Throwable().printStackTrace();
                     DriverStation.reportError("Invalid game data received from FMS. Aborting.", false);
                 }
-                if (gameData.charAt(1) == 'L') scalePosiiton = ScalePosiiton.Left;
-                else if (gameData.charAt(1) == 'R') scalePosiiton = ScalePosiiton.Right;
+                if (gameData.charAt(1) == 'L') scalePosition = ScalePosition.Left;
+                else if (gameData.charAt(1) == 'R') scalePosition = ScalePosition.Right;
                 else {
                     System.err.println("Invalid game data received from FMS. Aborting.");
                     new Throwable().printStackTrace();
@@ -250,7 +252,7 @@ public class Robot extends TimedRobot {
                         if (switchSameSideAction == SwitchSameSideActionProceed)
                             new SwitchAutoSameSideFarLeftOrRight(StartingPosition.Left, switchCubePositionEnum).start();
                         else if (switchSameSideAction == SwitchSameSideActionScale)
-                            if(scalePosiiton==ScalePosiiton.Left) new ScaleAutoFarLeftOrRight(StartingPosition.Left);
+                            if(scalePosition == ScalePosition.Left) new ScaleAutoFarLeftOrRight(StartingPosition.Left);
                             else {
                                 DriverStation.reportWarning("Switch is on wrong side. Aborting.",false);
                             }
@@ -267,7 +269,7 @@ public class Robot extends TimedRobot {
                         if (switchOppositeSideAction == SwitchOppositeSideActionRearCross)
                             new SwitchAutoOppositeSideCrossBehind(StartingPosition.Left, switchCubePositionEnum).start();
                         else if (switchOppositeSideAction == SwitchOppositeSideActionScale)
-                            if(scalePosiiton==ScalePosiiton.Right) new ScaleAutoFarLeftOrRight(StartingPosition.Right);
+                            if(scalePosition == ScalePosition.Right) new ScaleAutoFarLeftOrRight(StartingPosition.Right);
                             else {
                                 DriverStation.reportWarning("Switch is on wrong side. Aborting.",false);
                             }
@@ -382,7 +384,7 @@ public class Robot extends TimedRobot {
         Right
     }
 
-    enum ScalePosiiton {
+    enum ScalePosition {
         Left,
         Right
     }

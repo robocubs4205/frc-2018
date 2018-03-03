@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-import java.time.Instant;
-
 @SuppressWarnings("FieldCanBeLocal")
 class ArmTilt extends Subsystem{
     private final double raisePower = 0.5;
