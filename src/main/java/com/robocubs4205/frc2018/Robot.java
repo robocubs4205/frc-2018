@@ -94,13 +94,13 @@ public class Robot extends TimedRobot {
                     Math.pow(driveStick.getX(), 3)).start();
         }
 
-        DriverStation.reportWarning("Up Button: "+armStage1UpButton.get(), false);
-        DriverStation.reportWarning("Down Button: "+armStage1DownButton.get(), false);
-        DriverStation.reportWarning("Holding: "+isHoldingArm, false);
+        DriverStation.reportWarning("Up Button: " + armStage1UpButton.get(), false);
+        DriverStation.reportWarning("Down Button: " + armStage1DownButton.get(), false);
+        DriverStation.reportWarning("Holding: " + isHoldingArm, false);
 
-        if(armStage1UpButton.get()) isHoldingArm = true;
-        if(armStage1DownButton.get()) isHoldingArm = false;
-        if(isHoldingArm &&!armStage1UpButton.get()&&!armStage1DownButton.get()) armStage1.new Hold().start();
+        if (armStage1UpButton.get()) isHoldingArm = true;
+        if (armStage1DownButton.get()) isHoldingArm = false;
+        if (isHoldingArm && !armStage1UpButton.get() && !armStage1DownButton.get()) armStage1.new Hold().start();
 
         armStage2.new Proportional(-controlStick.getY()).start();
 
@@ -225,17 +225,27 @@ public class Robot extends TimedRobot {
             }
 
             SwitchPosition switchPosition = SwitchPosition.Left;
+            ScalePosiiton scalePosiiton = ScalePosiiton.Left;
             String gameData = DriverStation.getInstance().getGameSpecificMessage();
             if (gameData.length() != 3) {
                 System.err.println("Invalid game data received from FMS. Aborting.");
                 new Throwable().printStackTrace();
                 DriverStation.reportError("Invalid game data received from FMS. Aborting.", false);
-            } else if (gameData.charAt(0) == 'L') switchPosition = SwitchPosition.Left;
-            else if (gameData.charAt(0) == 'R') switchPosition = SwitchPosition.Right;
-            else {
-                System.err.println("Invalid game data received from FMS. Aborting.");
-                new Throwable().printStackTrace();
-                DriverStation.reportError("Invalid game data received from FMS. Aborting.", false);
+            } else {
+                if (gameData.charAt(0) == 'L') switchPosition = SwitchPosition.Left;
+                else if (gameData.charAt(0) == 'R') switchPosition = SwitchPosition.Right;
+                else {
+                    System.err.println("Invalid game data received from FMS. Aborting.");
+                    new Throwable().printStackTrace();
+                    DriverStation.reportError("Invalid game data received from FMS. Aborting.", false);
+                }
+                if (gameData.charAt(1) == 'L') scalePosiiton = ScalePosiiton.Left;
+                else if (gameData.charAt(1) == 'R') scalePosiiton = ScalePosiiton.Right;
+                else {
+                    System.err.println("Invalid game data received from FMS. Aborting.");
+                    new Throwable().printStackTrace();
+                    DriverStation.reportError("Invalid game data received from FMS. Aborting.", false);
+                }
             }
 
             switch (startingPosition) {
@@ -244,8 +254,11 @@ public class Robot extends TimedRobot {
                         if (switchSameSideAction == SwitchSameSideActionProceed)
                             new SwitchAutoSameSideFarLeftOrRight(StartingPosition.Left, switchCubePositionEnum).start();
                         else if (switchSameSideAction == SwitchSameSideActionScale)
-                            new ScaleAutoFarLeftOrRight(StartingPosition.Left);
-                        else if(switchSameSideAction == SwitchSameSideActionAutoLine)
+                            if(scalePosiiton==ScalePosiiton.Left) new ScaleAutoFarLeftOrRight(StartingPosition.Left);
+                            else {
+                                DriverStation.reportWarning("Switch is on wrong side. Aborting.",false);
+                            }
+                        else if (switchSameSideAction == SwitchSameSideActionAutoLine)
                             new DriveToAutoLine().start();
                         else if (switchSameSideAction == SwitchSameSideActionNullTerritory)
                             new DriveToCenterOfNullTerritory().start();
@@ -254,12 +267,15 @@ public class Robot extends TimedRobot {
                             new Throwable().printStackTrace();
                             DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
                         }
-                    } else {
+                    } else { //switchPosition == SwitchPosition.Right
                         if (switchOppositeSideAction == SwitchOppositeSideActionRearCross)
                             new SwitchAutoOppositeSideCrossBehind(StartingPosition.Left, switchCubePositionEnum).start();
                         else if (switchOppositeSideAction == SwitchOppositeSideActionScale)
-                            new ScaleAutoFarLeftOrRight(StartingPosition.Left);
-                        else if(switchOppositeSideAction == SwitchOppositeSideActionAutoLine)
+                            if(scalePosiiton==ScalePosiiton.Right) new ScaleAutoFarLeftOrRight(StartingPosition.Right);
+                            else {
+                                DriverStation.reportWarning("Switch is on wrong side. Aborting.",false);
+                            }
+                        else if (switchOppositeSideAction == SwitchOppositeSideActionAutoLine)
                             new DriveToAutoLine().start();
                         else if (switchOppositeSideAction == SwitchOppositeSideActionNullTerritory)
                             new DriveToCenterOfNullTerritory().start();
@@ -318,11 +334,10 @@ public class Robot extends TimedRobot {
                 default:
                     System.err.println("Autonomous case not implemented. Aborting.");
             }
-        }
-        catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.err.println("Invalid data received from the Driver Station. Aborting.");
             e.printStackTrace();
-            DriverStation.reportError("Invalid data received from the Driver Station. Aborting.",false);
+            DriverStation.reportError("Invalid data received from the Driver Station. Aborting.", false);
         }
     }
 
@@ -349,7 +364,7 @@ public class Robot extends TimedRobot {
     private static final double RobotBumperLength = 34.0 / 12;
     private static final double AllianceStationWidth = 22;
     private static final double SwitchDepth = 4 + 8.0 / 12;
-    private static final double AllianceStationToSwitch = 14-SwitchDepth/12;
+    private static final double AllianceStationToSwitch = 14 - SwitchDepth / 12;
     private static final double SwitchWidth = 12 + 9.5 / 12;
     private static final double ScaleWidth = 15;
 
@@ -367,6 +382,11 @@ public class Robot extends TimedRobot {
     }
 
     enum SwitchPosition {
+        Left,
+        Right
+    }
+
+    enum ScalePosiiton {
         Left,
         Right
     }
@@ -399,8 +419,8 @@ public class Robot extends TimedRobot {
             }
 
             //prepare arm
-            if(cubePosition == SwitchCubePosition.Forks)
-                addSequential(armStage1.new Extend(),1);
+            if (cubePosition == SwitchCubePosition.Forks)
+                addSequential(armStage1.new Extend(), 1);
 
             //drive to switch
             {
@@ -417,7 +437,7 @@ public class Robot extends TimedRobot {
             //put cube in box
             switch (cubePosition) {
                 case Forks:
-                    addSequential(manipulator.belt.new Out(),1);
+                    addSequential(manipulator.belt.new Out(), 1);
                 case Shelf:
                     addSequential(roller.new Out(), 1);
             }
@@ -432,7 +452,7 @@ public class Robot extends TimedRobot {
             //drive past switch
             {
                 double distance = AllianceStationWidth + SwitchDepth * 3 / 2;
-                switch (cubePosition){
+                switch (cubePosition) {
                     case Forks:
                         addSequential(driveTrain.new DriveEncoder(distance));
                     case Shelf:
@@ -447,7 +467,7 @@ public class Robot extends TimedRobot {
             }
             {
                 double distance = AllianceStationWidth - RobotBumperLength;
-                switch (cubePosition){
+                switch (cubePosition) {
                     case Forks:
                         addSequential(driveTrain.new DriveEncoder(distance));
                     case Shelf:
@@ -462,7 +482,7 @@ public class Robot extends TimedRobot {
             }
             {
                 double distance = SwitchDepth;
-                switch (cubePosition){
+                switch (cubePosition) {
                     case Forks:
                         addSequential(driveTrain.new DriveEncoder(distance));
                     case Shelf:
@@ -477,13 +497,13 @@ public class Robot extends TimedRobot {
             }
 
             //prepare arm
-            if(cubePosition == SwitchCubePosition.Forks)
-                addSequential(armStage1.new Extend(),1);
+            if (cubePosition == SwitchCubePosition.Forks)
+                addSequential(armStage1.new Extend(), 1);
 
             //drive to switch
             {
                 double distance = AllianceStationWidth / 2 - SwitchWidth / 2 - RobotBumperLength;
-                switch (cubePosition){
+                switch (cubePosition) {
                     case Forks:
                         addSequential(driveTrain.new DriveEncoder(distance));
                     case Shelf:
@@ -493,7 +513,7 @@ public class Robot extends TimedRobot {
             //put cube in box
             switch (cubePosition) {
                 case Forks:
-                    addSequential(manipulator.belt.new Out(),1);
+                    addSequential(manipulator.belt.new Out(), 1);
                 case Shelf:
                     addSequential(roller.new Out(), 1);
             }
@@ -504,13 +524,13 @@ public class Robot extends TimedRobot {
         SwitchAutoSameSideCenterLeftOrRight(SwitchCubePosition cubePosition) {
 
             //prepare arm
-            if(cubePosition == SwitchCubePosition.Forks)
-                addSequential(armStage1.new Extend(),1);
+            if (cubePosition == SwitchCubePosition.Forks)
+                addSequential(armStage1.new Extend(), 1);
 
-            if (cubePosition == SwitchCubePosition.Forks) addSequential(armStage1.new Extend(),1);
+            if (cubePosition == SwitchCubePosition.Forks) addSequential(armStage1.new Extend(), 1);
             {
                 double distance = AllianceStationToSwitch - RobotBumperLength;
-                switch (cubePosition){
+                switch (cubePosition) {
                     case Forks:
                         addSequential(driveTrain.new DriveEncoder(distance));
                     case Shelf:
@@ -520,7 +540,7 @@ public class Robot extends TimedRobot {
             //put cube in box
             switch (cubePosition) {
                 case Forks:
-                    addSequential(manipulator.belt.new Out(),1);
+                    addSequential(manipulator.belt.new Out(), 1);
                 case Shelf:
                     addSequential(roller.new Out(), 1);
             }
