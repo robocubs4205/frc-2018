@@ -72,6 +72,14 @@ class DriveTrain extends Subsystem {
         }
 
         @Override
+        protected void initialize(){
+            rearLeft.configPeakOutputForward(1, 10);
+            rearRight.configPeakOutputForward(1, 10);
+            rearLeft.configPeakOutputReverse(-1, 10);
+            rearRight.configPeakOutputReverse(-1, 10);
+        }
+
+        @Override
         protected void execute() {
             drive.set(DriveMode.PercentOutput,
                     forward * proportionalLateralSpeed,
