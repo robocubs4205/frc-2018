@@ -94,10 +94,6 @@ public class Robot extends TimedRobot {
                     Math.pow(driveStick.getX(), 3)).start();
         }
 
-        DriverStation.reportWarning("Up Button: " + armStage1UpButton.get(), false);
-        DriverStation.reportWarning("Down Button: " + armStage1DownButton.get(), false);
-        DriverStation.reportWarning("Holding: " + isHoldingArm, false);
-
         if (armStage1UpButton.get()) isHoldingArm = true;
         if (armStage1DownButton.get()) isHoldingArm = false;
         if (isHoldingArm && !armStage1UpButton.get() && !armStage1DownButton.get()) armStage1.new Hold().start();
