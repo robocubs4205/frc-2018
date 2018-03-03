@@ -185,7 +185,7 @@ public class Robot extends TimedRobot {
         try {
             int startingPosition = Integer.parseInt(SmartDashboard.getString("Starting Position", "-1"));
             int switchOppositeSideAction =
-                    Integer.parseInt(SmartDashboard.getString("Switch OppositeSideAction", "-1"));
+                    Integer.parseInt(SmartDashboard.getString("Switch Opposite Side Action", "-1"));
             int switchSameSideAction =
                     Integer.parseInt(SmartDashboard.getString("Switch Same Side Action", "-1"));
             int switchRightSideAction =
@@ -202,8 +202,13 @@ public class Robot extends TimedRobot {
                             (switchRightSideAction == SwitchRightSideActionNotFound ||
                                     switchLeftSideAction == SwitchLeftSideActionNotFound))) {
                 System.err.println("Received incomplete autonomous configuration from drive station. Aborting.");
+                System.err.println("StartingPosition: "+startingPosition);
+                System.err.println("SwitchOppositeSideAction: "+switchOppositeSideAction);
+                System.err.println("SwitchSameSideAction: "+switchSameSideAction);
+                System.err.println("SwitchRightSideAction: "+switchRightSideAction);
+                System.err.println("SwitchLeftSideAction: "+switchLeftSideAction);
                 new Throwable().printStackTrace();
-                DriverStation.reportError("Recieved incomplete autonomous configuration from drive station. Aborting", false);
+                DriverStation.reportError("Recieved incomplete autonomous configuration from drive station. Trevor screwed up. Aborting", false);
                 return;
             }
 
@@ -402,7 +407,6 @@ public class Robot extends TimedRobot {
                 switch (cubePosition) {
                     case Forks:
                         addSequential(driveTrain.new DriveEncoder(distance));
-                        return;
                     case Shelf:
                         addSequential(driveTrain.new DriveEncoder(-distance));
                 }
@@ -415,10 +419,6 @@ public class Robot extends TimedRobot {
             } else { //Right
                 addSequential(driveTrain.new TurnByAmount(-90));
             }
-
-            //prepare arm
-            if (cubePosition == SwitchCubePosition.Forks)
-                addSequential(armStage1.new Extend(), 1);
 
             //drive to switch
             {
@@ -494,10 +494,6 @@ public class Robot extends TimedRobot {
                 addSequential(driveTrain.new TurnByAmount(-90));
             }
 
-            //prepare arm
-            if (cubePosition == SwitchCubePosition.Forks)
-                addSequential(armStage1.new Extend(), 1);
-
             //drive to switch
             {
                 double distance = AllianceStationWidth / 2 - SwitchWidth / 2 - RobotBumperLength;
@@ -520,10 +516,6 @@ public class Robot extends TimedRobot {
 
     private class SwitchAutoSameSideCenterLeftOrRight extends CommandGroup {
         SwitchAutoSameSideCenterLeftOrRight(SwitchCubePosition cubePosition) {
-
-            //prepare arm
-            if (cubePosition == SwitchCubePosition.Forks)
-                addSequential(armStage1.new Extend(), 1);
 
             if (cubePosition == SwitchCubePosition.Forks) addSequential(armStage1.new Extend(), 1);
             {
