@@ -167,16 +167,16 @@ class DriveTrain extends Subsystem {
         private final double tolerance;
 
         TurnByAmount(double angle){
-            this(angle,5);
+            this(angle,0.3,5);
         }
 
-        TurnByAmount(double angle, double tolerance){
+        TurnByAmount(double angle, double maxPower, double tolerance){
             super(1f/20,0,0);
             this.tolerance = tolerance;
             requires(DriveTrain.this);
             getPIDController().setContinuous();
             getPIDController().setInputRange(0,360);
-            getPIDController().setOutputRange(-0.3,0.3);
+            getPIDController().setOutputRange(-Math.abs(maxPower),Math.abs(maxPower));
             setSetpoint(gyro.getAngle()+angle);
         }
 

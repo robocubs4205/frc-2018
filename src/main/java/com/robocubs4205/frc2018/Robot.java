@@ -177,6 +177,14 @@ public class Robot extends TimedRobot {
     private final int SwitchLeftSideActionNothing = 0;
     private final int SwitchLeftSideActionProceed = 1;
 
+    private final int ScaleSwitchSameSideActionNotFound = -1;
+    private final int ScaleSwitchSameSideActionNothing = 0;
+    private final int ScaleSwitchSameSideActionAutoLine = 4;
+
+    private final int ScaleSwitchOppositeSideActionNotFound = -1;
+    private final int ScaleSwitchOppositeSideActionNothing = 0;
+    private final int ScaleSwitchOppositeSideActionAutoLine = 4;
+
     private final int CubePositionNotFound = -1;
     private final int CubePositionForks = 0;
     private final int CubePositionShelf = 1;
@@ -195,12 +203,18 @@ public class Robot extends TimedRobot {
             int switchCubePosition =
                     Integer.parseInt(SmartDashboard.getString("Cube Position", "-1"));
 
-            System.err.println("Received incomplete autonomous configuration from drive station. Aborting.");
-            System.err.println("StartingPosition: " + startingPosition);
-            System.err.println("SwitchOppositeSideAction: " + switchOppositeSideAction);
-            System.err.println("SwitchSameSideAction: " + switchSameSideAction);
-            System.err.println("SwitchRightSideAction: " + switchRightSideAction);
-            System.err.println("SwitchLeftSideAction: " + switchLeftSideAction);
+            int scaleSwitchSameSideFallbackAction =
+                    Integer.parseInt(SmartDashboard.getString("Scale Switch Same Side Fallback Action","-1"));
+            int scaleSwitchOppositeSideFallbackAction =
+                    Integer.parseInt(SmartDashboard.getString("Scale Switch Opposite Side Fallback Action","-1"));
+
+            System.out.println("StartingPosition: " + startingPosition);
+            System.out.println("SwitchOppositeSideAction: " + switchOppositeSideAction);
+            System.out.println("SwitchSameSideAction: " + switchSameSideAction);
+            System.out.println("SwitchRightSideAction: " + switchRightSideAction);
+            System.out.println("SwitchLeftSideAction: " + switchLeftSideAction);
+            System.out.println("ScaleSwitchOppositeSideFallbackAction "+scaleSwitchOppositeSideFallbackAction);
+            System.out.println("ScaleSwitchSameSideFallbackAction "+scaleSwitchSameSideFallbackAction);
 
             if (startingPosition == StartingPositionNotFound ||
                     (startingPosition != StartingPositionCenter &&
@@ -208,7 +222,10 @@ public class Robot extends TimedRobot {
                                     switchSameSideAction == SwitchSameSideActionNotFound)) ||
                     (startingPosition == StartingPositionCenter &&
                             (switchRightSideAction == SwitchRightSideActionNotFound ||
-                                    switchLeftSideAction == SwitchLeftSideActionNotFound))) {
+                                    switchLeftSideAction == SwitchLeftSideActionNotFound)) ||
+                    (switchOppositeSideAction==SwitchOppositeSideActionScale && scaleSwitchOppositeSideFallbackAction==ScaleSwitchOppositeSideActionNotFound) ||
+                    (switchSameSideAction==SwitchSameSideActionScale && scaleSwitchSameSideFallbackAction==ScaleSwitchSameSideActionNothing)) {
+                System.err.println("Received incomplete autonomous configuration from drive station. Aborting.");
                 new Throwable().printStackTrace();
                 DriverStation.reportError("Recieved incomplete autonomous configuration from drive station. Trevor screwed up. Aborting", false);
                 return;
@@ -261,7 +278,15 @@ public class Robot extends TimedRobot {
                         else if (switchSameSideAction == SwitchSameSideActionScale)
                             if (scalePosition == ScalePosition.Left) new ScaleAutoFarLeftOrRight(StartingPosition.Left).start();
                             else {
-                                DriverStation.reportWarning("Switch is on wrong side. Aborting.", false);
+                                DriverStation.reportWarning("Switch is on wrong side. Falling back.", false);
+                                if(scaleSwitchSameSideFallbackAction==ScaleSwitchSameSideActionAutoLine){
+                                    new DriveToAutoLine().start();
+                                }
+                                else if(scaleSwitchSameSideFallbackAction!=ScaleSwitchSameSideActionNothing){
+                                    System.err.println("Autonomous case not implemented. Aborting.");
+                                    new Throwable().printStackTrace();
+                                    DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                                }
                             }
                         else if (switchSameSideAction == SwitchSameSideActionAutoLine)
                             new DriveToAutoLine().start();
@@ -276,9 +301,20 @@ public class Robot extends TimedRobot {
                         if (switchOppositeSideAction == SwitchOppositeSideActionRearCross)
                             new SwitchAutoOppositeSideCrossBehind(StartingPosition.Left, switchCubePositionEnum).start();
                         else if (switchOppositeSideAction == SwitchOppositeSideActionScale)
-                            if (scalePosition == ScalePosition.Right) new ScaleAutoFarLeftOrRight(StartingPosition.Right);
+                            if (scalePosition == ScalePosition.Left) new ScaleAutoFarLeftOrRight(StartingPosition.Left);
                             else {
-                                DriverStation.reportWarning("Switch is on wrong side. Aborting.", false);
+                                DriverStation.reportWarning("Switch is on wrong side. Falling back.", false);
+                                if(scaleSwitchOppositeSideFallbackAction==ScaleSwitchSameSideActionAutoLine){
+                                    new DriveToAutoLine().start();
+                                }
+                                else if(scaleSwitchOppositeSideFallbackAction==ScaleSwitchSameSideActionNothing){
+                                    DriverStation.reportWarning("Fallback was set to \"Do Nothing\"", false);
+                                }
+                                else {
+                                    System.err.println("Autonomous case not implemented. Aborting.");
+                                    new Throwable().printStackTrace();
+                                    DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                                }
                             }
                         else if (switchOppositeSideAction == SwitchOppositeSideActionAutoLine)
                             new DriveToAutoLine().start();
@@ -294,7 +330,20 @@ public class Robot extends TimedRobot {
                 case StartingPositionRight:
                     if (switchPosition == SwitchPosition.Right) {
                         if (switchSameSideAction == SwitchSameSideActionProceed) new SwitchAutoSameSideFarLeftOrRight(StartingPosition.Right, switchCubePositionEnum).start();
-                        else if (switchSameSideAction == SwitchSameSideActionScale) new ScaleAutoFarLeftOrRight(StartingPosition.Right).start();
+                        else if (switchSameSideAction == SwitchSameSideActionScale) {
+                            if(scalePosition==ScalePosition.Right) new ScaleAutoFarLeftOrRight(StartingPosition.Right).start();
+                            else {
+                                DriverStation.reportWarning("Switch is on wrong side. Falling back.", false);
+                                if(scaleSwitchSameSideFallbackAction==ScaleSwitchSameSideActionAutoLine){
+                                    new DriveToAutoLine().start();
+                                }
+                                else if(scaleSwitchSameSideFallbackAction!=ScaleSwitchSameSideActionNothing){
+                                    System.err.println("Autonomous case not implemented. Aborting.");
+                                    new Throwable().printStackTrace();
+                                    DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                                }
+                            }
+                        }
                         else if (switchSameSideAction != SwitchSameSideActionNothing) {
                             System.err.println("Autonomous case not implemented. Aborting.");
                             new Throwable().printStackTrace();
@@ -302,7 +351,20 @@ public class Robot extends TimedRobot {
                         }
                     } else {
                         if (switchOppositeSideAction == SwitchOppositeSideActionRearCross) new SwitchAutoOppositeSideCrossBehind(StartingPosition.Right, switchCubePositionEnum).start();
-                        else if (switchOppositeSideAction == SwitchOppositeSideActionScale) new ScaleAutoFarLeftOrRight(StartingPosition.Right).start();
+                        else if (switchOppositeSideAction == SwitchOppositeSideActionScale) {
+                            if(scalePosition==ScalePosition.Right) new ScaleAutoFarLeftOrRight(StartingPosition.Right).start();
+                            else {
+                                DriverStation.reportWarning("Switch is on wrong side. Falling back.", false);
+                                if(scaleSwitchSameSideFallbackAction==ScaleSwitchSameSideActionAutoLine){
+                                    new DriveToAutoLine().start();
+                                }
+                                else if(scaleSwitchSameSideFallbackAction!=ScaleSwitchSameSideActionNothing){
+                                    System.err.println("Autonomous case not implemented. Aborting.");
+                                    new Throwable().printStackTrace();
+                                    DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                                }
+                            }
+                        }
                         else if (switchOppositeSideAction != SwitchOppositeSideActionNothing) {
                             System.err.println("Autonomous case not implemented. Aborting.");
                             new Throwable().printStackTrace();
@@ -496,13 +558,16 @@ public class Robot extends TimedRobot {
          */
         ScaleAutoFarLeftOrRight(StartingPosition startingPosition) {
             DriverStation.reportWarning(this.getClass().getName(), true);
-            addSequential(driveTrain.new DriveEncoder(FieldLength / 2));
-            addParallel(armStage1.new Extend(), 8);
-            addParallel(armStage2.new Proportional(1), 8);
-            if (startingPosition == StartingPosition.Left) addSequential(driveTrain.new TurnByAmount(90));
-            else if(startingPosition==StartingPosition.Left)addSequential(driveTrain.new TurnByAmount(-90));
+            addSequential(driveTrain.new DriveEncoder(FieldLength / 2,0.1));
+            addParallel(armStage1.new Extend(.1), 8);
+            if (startingPosition == StartingPosition.Left) addSequential(driveTrain.new TurnByAmount(90,0.1,5));
+            else if(startingPosition==StartingPosition.Right)addSequential(driveTrain.new TurnByAmount(-90,0.1,5));
 
-            addSequential(driveTrain.new DriveEncoder(AllianceStationWidth / 2 - ScaleWidth / 2 - RobotBumperLength, 0.2));
+            //addSequential(driveTrain.new DriveEncoder(AllianceStationWidth / 2 - ScaleWidth / 2 - RobotBumperLength, 0.1));
+            //go forward gently until end of auto
+            addParallel(driveTrain.new DriveEncoder(10,0.05),10);
+            //wait for 3 seconds
+            addSequential(new PerpetualCommand() {},3);
             addSequential(manipulator.belt.new Out(), 1);
         }
     }

@@ -28,13 +28,20 @@ class ArmStage1 extends Subsystem{
 
     class Extend extends PerpetualCommand {
 
+        private final double power;
+
         Extend(){
+            this(extendPower);
+        }
+
+        Extend(double power){
+            this.power = power;
             requires(ArmStage1.this);
         }
 
         @Override
         protected void execute(){
-            motor.set(extendPower);
+            motor.set(Math.abs(power));
         }
     }
 
