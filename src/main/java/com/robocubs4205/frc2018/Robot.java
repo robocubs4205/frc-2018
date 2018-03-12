@@ -224,10 +224,10 @@ public class Robot extends TimedRobot {
                             (switchRightSideAction == SwitchRightSideActionNotFound ||
                                     switchLeftSideAction == SwitchLeftSideActionNotFound)) ||
                     (switchOppositeSideAction==SwitchOppositeSideActionScale && scaleSwitchOppositeSideFallbackAction==ScaleSwitchOppositeSideActionNotFound) ||
-                    (switchSameSideAction==SwitchSameSideActionScale && scaleSwitchSameSideFallbackAction==ScaleSwitchSameSideActionNothing)) {
+                    (switchSameSideAction==SwitchSameSideActionScale && scaleSwitchSameSideFallbackAction==ScaleSwitchSameSideActionNotFound)) {
                 System.err.println("Received incomplete autonomous configuration from drive station. Aborting.");
                 new Throwable().printStackTrace();
-                DriverStation.reportError("Recieved incomplete autonomous configuration from drive station. Trevor screwed up. Aborting", false);
+                DriverStation.reportError("Received incomplete autonomous configuration from drive station. Trevor screwed up. Aborting", false);
                 return;
             }
 
@@ -349,7 +349,7 @@ public class Robot extends TimedRobot {
                             new Throwable().printStackTrace();
                             DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
                         }
-                    } else {
+                    } else { //switchPosition == SwitchPosition.Left
                         if (switchOppositeSideAction == SwitchOppositeSideActionRearCross) new SwitchAutoOppositeSideCrossBehind(StartingPosition.Right, switchCubePositionEnum).start();
                         else if (switchOppositeSideAction == SwitchOppositeSideActionScale) {
                             if(scalePosition==ScalePosition.Right) new ScaleAutoFarLeftOrRight(StartingPosition.Right).start();
@@ -530,7 +530,7 @@ public class Robot extends TimedRobot {
                 else if (cubePosition == SwitchCubePosition.Shelf) addSequential(driveTrain.new DriveEncoder(-distance));
             }
 
-            //put cube in box
+            //put cube in switch
             if (cubePosition == SwitchCubePosition.Forks) addSequential(manipulator.belt.new Out(), 1);
             else if (cubePosition == SwitchCubePosition.Shelf) addSequential(roller.new Out(), 1);
         }
@@ -563,7 +563,6 @@ public class Robot extends TimedRobot {
             if (startingPosition == StartingPosition.Left) addSequential(driveTrain.new TurnByAmount(90,0.1,5));
             else if(startingPosition==StartingPosition.Right)addSequential(driveTrain.new TurnByAmount(-90,0.1,5));
 
-            //addSequential(driveTrain.new DriveEncoder(AllianceStationWidth / 2 - ScaleWidth / 2 - RobotBumperLength, 0.1));
             //go forward gently until end of auto
             addParallel(driveTrain.new DriveEncoder(10,0.05),10);
             //wait for 3 seconds
