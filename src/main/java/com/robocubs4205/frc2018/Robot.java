@@ -431,7 +431,7 @@ public class Robot extends TimedRobot {
 
     class DriveToAutoLine extends CommandGroup {
         DriveToAutoLine() {
-            DriverStation.reportWarning(this.getClass().getName(), true);
+            DriverStation.reportWarning(this.getClass().getName(), false);
             //add 8 inch margin to ensure crossing
             addSequential(driveTrain.new DriveEncoder(AutoLine - RobotBumperLength + 8.0 / 12));
         }
@@ -439,7 +439,7 @@ public class Robot extends TimedRobot {
 
     class DriveToCenterOfNullTerritory extends CommandGroup {
         DriveToCenterOfNullTerritory() {
-            DriverStation.reportWarning(this.getClass().getName(), true);
+            DriverStation.reportWarning(this.getClass().getName(), false);
             addSequential(driveTrain.new DriveEncoder(FieldLength / 2 - RobotBumperLength / 2));
         }
     }
@@ -461,7 +461,7 @@ public class Robot extends TimedRobot {
 
     private class SwitchAutoSameSideFarLeftOrRight extends CommandGroup {
         SwitchAutoSameSideFarLeftOrRight(StartingPosition startingPosition, SwitchCubePosition cubePosition) {
-            DriverStation.reportWarning(this.getClass().getName(), true);
+            DriverStation.reportWarning(this.getClass().getName(), false);
             //drive forward until in line with switch
             {
                 double distance = AllianceStationToSwitch + SwitchDepth / 2;
@@ -493,7 +493,7 @@ public class Robot extends TimedRobot {
     private class SwitchAutoOppositeSideCrossBehind extends CommandGroup {
         SwitchAutoOppositeSideCrossBehind(StartingPosition startingPosition, SwitchCubePosition cubePosition) {
             System.out.println("Robot starts on opposite side as switch target");
-            DriverStation.reportWarning(this.getClass().getName(), true);
+            DriverStation.reportWarning(this.getClass().getName(), false);
 
             //drive past switch
             {
@@ -539,7 +539,7 @@ public class Robot extends TimedRobot {
     private class SwitchAutoSameSideCenterLeftOrRight extends CommandGroup {
         SwitchAutoSameSideCenterLeftOrRight(SwitchCubePosition cubePosition) {
 
-            DriverStation.reportWarning(this.getClass().getName(), true);
+            DriverStation.reportWarning(this.getClass().getName(), false);
 
             {
                 double distance = AllianceStationToSwitch - RobotBumperLength;
@@ -557,7 +557,7 @@ public class Robot extends TimedRobot {
          * Fork only
          */
         ScaleAutoFarLeftOrRight(StartingPosition startingPosition) {
-            DriverStation.reportWarning(this.getClass().getName(), true);
+            DriverStation.reportWarning(this.getClass().getName(), false);
             addSequential(driveTrain.new DriveEncoder(FieldLength / 2,0.1));
             addParallel(armStage1.new Extend(.1), 8);
             if (startingPosition == StartingPosition.Left) addSequential(driveTrain.new TurnByAmount(90,0.1,5));
