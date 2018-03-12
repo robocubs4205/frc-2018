@@ -381,7 +381,14 @@ public class Robot extends TimedRobot {
                             new Throwable().printStackTrace();
                             DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
                         }
-                    } else System.err.println("Autonomous case not implemented. Aborting.");
+                    } else { //switchPosition == SwitchPosition.Left
+                        if(switchOppositeSideAction==SwitchOppositeSideActionFrontCross) new SwitchAutoOppositeSideCenterLeftOrRight(StartingPosition.Left,switchCubePositionEnum).start();
+                        else if(switchOppositeSideAction!=SwitchOppositeSideActionNothing) {
+                            System.err.println("Autonomous case not implemented. Aborting.");
+                            new Throwable().printStackTrace();
+                            DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                        }
+                    }
                     break;
                 case StartingPositionCenterRight:
                     if (switchPosition == SwitchPosition.Right) {
@@ -391,7 +398,14 @@ public class Robot extends TimedRobot {
                             new Throwable().printStackTrace();
                             DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
                         }
-                    } else System.err.println("Autonomous case not implemented. Aborting.");
+                    } else { //switchPosition == SwitchPosition.Left
+                        if(switchOppositeSideAction==SwitchOppositeSideActionFrontCross) new SwitchAutoOppositeSideCenterLeftOrRight(StartingPosition.Right,switchCubePositionEnum).start();
+                        else if(switchOppositeSideAction!=SwitchOppositeSideActionNothing) {
+                            System.err.println("Autonomous case not implemented. Aborting.");
+                            new Throwable().printStackTrace();
+                            DriverStation.reportError("Autonomous case not implemented. Aborting.", false);
+                        }
+                    }
                     break;
                 default:
                     System.err.println("Autonomous case not implemented. Aborting.");
