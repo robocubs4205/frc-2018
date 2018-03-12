@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -546,6 +547,50 @@ public class Robot extends TimedRobot {
                 if (cubePosition == SwitchCubePosition.Forks) addSequential(driveTrain.new DriveEncoder(distance));
                 else if (cubePosition == SwitchCubePosition.Shelf) addSequential(driveTrain.new DriveEncoder(-distance));
             }
+            //put cube in box
+            if (cubePosition == SwitchCubePosition.Forks) addSequential(manipulator.belt.new Out(), 1);
+            else if (cubePosition == SwitchCubePosition.Shelf) addSequential(roller.new Out(), 1);
+        }
+    }
+
+    private class SwitchAutoOppositeSideCenterLeftOrRight extends CommandGroup{
+        SwitchAutoOppositeSideCenterLeftOrRight(StartingPosition startingPosition, SwitchCubePosition cubePosition){
+            {
+                double distance = AllianceStationToSwitch/2;
+                if (cubePosition == SwitchCubePosition.Forks) addSequential(driveTrain.new DriveEncoder(distance));
+                else if (cubePosition == SwitchCubePosition.Shelf) addSequential(driveTrain.new DriveEncoder(-distance));
+                else {
+                    DriverStation.reportError("The selected autonomous mode is not implemented. Autonomous may start but will not finish", false);
+                    return;
+                }
+            }
+
+            if (startingPosition == StartingPosition.Left) addSequential(driveTrain.new TurnByAmount(90));
+            else addSequential(driveTrain.new TurnByAmount(-90));
+
+            {
+                double distance = SwitchWidth-RobotBumperLength;
+                if (cubePosition == SwitchCubePosition.Forks) addSequential(driveTrain.new DriveEncoder(distance));
+                else if (cubePosition == SwitchCubePosition.Shelf) addSequential(driveTrain.new DriveEncoder(-distance));
+                else {
+                    DriverStation.reportError("The selected autonomous mode is not implemented. Autonomous may start but will not finish", false);
+                    return;
+                }
+            }
+
+            if (startingPosition == StartingPosition.Left) addSequential(driveTrain.new TurnByAmount(-90));
+            else addSequential(driveTrain.new TurnByAmount(90));
+
+            {
+                double distance = AllianceStationToSwitch/2;
+                if (cubePosition == SwitchCubePosition.Forks) addSequential(driveTrain.new DriveEncoder(distance));
+                else if (cubePosition == SwitchCubePosition.Shelf) addSequential(driveTrain.new DriveEncoder(-distance));
+                else {
+                    DriverStation.reportError("The selected autonomous mode is not implemented. Autonomous may start but will not finish", false);
+                    return;
+                }
+            }
+
             //put cube in box
             if (cubePosition == SwitchCubePosition.Forks) addSequential(manipulator.belt.new Out(), 1);
             else if (cubePosition == SwitchCubePosition.Shelf) addSequential(roller.new Out(), 1);
